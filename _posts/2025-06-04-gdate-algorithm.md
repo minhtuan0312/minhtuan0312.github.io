@@ -8,7 +8,7 @@ math: true
 ---
 Xin chào các bạn!!! Đây là blog đầu tiên của mình nên có thể mình viết chưa được chuyên nghiệp cho lắm, mọi góp ý, sai sót sẽ được mình tiếp nhận để mình cải thiện trong việc viết blog ^^
 
-![img-description](/assets/img/Gregorian Calendar.jpg/)
+![Lịch Gregorius](/assets/img/Gregorian Calendar.jpg)
 _Lịch Gregorius (hệ thống lịch của thế giới ngày nay)_
 
 Và sau đây mình xin được giới thiệu với các bạn một thuật toán rất độc lạ, song mạnh mẽ và hiệu quả trong việc xử lý ngày tháng mà hầu như mình chưa thấy nguồn tiếng Việt nào nhắc tới. Với tên gọi <b>"Thuật toán GDate"</b> - Thuật toán ban đầu được gợi ý bởi G. Katchalski và đã được sử dụng rộng rãi trong các thư viện xử lý ngày tháng.
