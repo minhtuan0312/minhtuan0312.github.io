@@ -11,7 +11,7 @@ Xin chào các bạn!!! Đây là blog đầu tiên của mình nên có thể m
 ![Lịch Gregorius](/assets/img/Gregorian Calendar.jpg)
 _Lịch Gregorius (hệ thống lịch của thế giới ngày nay)_
 
-Và sau đây mình xin được giới thiệu với các bạn một thuật toán rất độc lạ, song mạnh mẽ và hiệu quả trong việc xử lý ngày tháng mà hầu như mình chưa thấy nguồn tiếng Việt nào nhắc tới. Với tên gọi <b>"Thuật toán GDate"</b> - Thuật toán ban đầu được gợi ý bởi G. Katchalski và đã được sử dụng rộng rãi trong các thư viện xử lý ngày tháng.
+Và sau đây mình xin được giới thiệu với các bạn một thuật toán rất độc lạ, song mạnh mẽ và hiệu quả trong việc xử lý ngày tháng mà hầu như mình chưa thấy nguồn tiếng Việt nào nhắc tới. Với tên gọi <b>"Thuật toán GDate"</b> - Thuật toán ban đầu được gợi ý bởi Gary Katch và đã được sử dụng rộng rãi trong các thư viện xử lý ngày tháng.
 
 | Ưu điểm                                                                           |
 | :-------------------------------------------------------------------------------- |
@@ -219,7 +219,7 @@ $$
 ## Mã giải (C++)
 
 ```c++
-
+#define ll long long
 struct gdate {
 
     ll d, m, y; // Lưu ngày, tháng, năm
@@ -235,6 +235,7 @@ struct gdate {
         return 365 * y + y / 4 - y / 100 + y / 400; // (2)
     }
 
+    // Chuyển đổi (d, m, y) sang tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) 
     ll toDays() {
 
         // Chuyển tháng hiện tại (1-12) sang month_index (0-11), với tháng 3 là 0
@@ -292,7 +293,6 @@ struct gdate {
     }
 
 }
-
 ```
 
 Độ phức tạp của các thao tác tính toán trên tổng thể chỉ mất $O(1)$, do đó rất hiệu quả.
@@ -375,8 +375,8 @@ string s = buf;
 <https://oj.vnoi.info/problem/coci1920_r6_datum>{:target="_blank"}
 
 ## Nguồn tham khảo
-- [G.Katchalski, “GDate method (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html){:target="_blank"}
-- [G.Katchalski, “GDate algorithm (Archived)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html){:target="_blank"}
+- [Gary Katch, “GDate method (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html){:target="_blank"}
+- [Gary Katch, “GDate algorithm (Archived)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html){:target="_blank"}
 
 #### Ghi chú
 [^hamroirac]: Hàm rời rạc: Hàm lấy phần nguyên và bỏ qua phần dư
