@@ -112,15 +112,15 @@ $$
 
 #### Cách khắc phục
 
-Để khắc phục sai lệch trên, đầu tiên ta đưa công thức \eqref{eq:approxy} về dạng tính toán với số nguyên để tránh sai số do tính toán với số dấu phẩy động (floating-point numbers):
+Để khắc phục sai lệch trên, đầu tiên ta đưa công thức \eqref{eq:approxy} về dạng <b>tính toán với số nguyên để tránh sai số do tính toán với số dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic)):
 
 $$
 y_{approx} = \frac{d}{365.2425} = \frac{d * 10000}{365.2425 * 10000} = \frac{10000d}{3652425}
 $$
 
-Tuy nhiên, công thức trên vẫn cho ra kết quả sai lệch nên ta phải bù vào một hằng số $C$ (offset) để chắc chắn không bị trượt sai một đơn vị khi rời rạc hóa. Một lựa chọn quan trọng cho $C$ là sử dụng $C_{max}$. Việc đặt $C = C_{max}$ mang lại một ưu điểm quan trọng: Nó đảm bảo rằng $y_{approx}$ sẽ không bao giờ nhỏ hơn $y$ ($y_{approx} \geq y$). Cụ thể, $y_{approx}$ = $[y, y + 1]$. Nhờ vậy, ta có thể đảm bảo năm chính xác.
+Tuy nhiên, công thức trên vẫn cho ra kết quả sai lệch nên ta phải bù vào một hằng số $C$ (offset) để chắc chắn không bị trượt sai một đơn vị khi rời rạc hóa. Một lựa chọn quan trọng cho $C$ là sử dụng $C_{max}$. Việc đặt $C = C_{max}$ mang lại một ưu điểm quan trọng $\Rightarrow$ <b>Nó đảm bảo rằng $y_{approx}$ sẽ không bao giờ nhỏ hơn $y$ ($y_{approx} \geq y$).</b> Cụ thể, $y_{approx}$ = $[y, y + 1]$. Nhờ vậy, ta có thể đảm bảo năm chính xác.
 
-Đâu tiên ta tìm sai lệch lớn nhất giữa $10000D(y)$ và $y(3652425)$ trên một chu kỳ 400 năm (vì cứ 400 năm sai số tái lặp):
+Đâu tiên ta tìm độ sai lệch lớn nhất giữa $10000D(y)$ và $y(3652425)$ trên một chu kỳ 400 năm (vì cứ 400 năm sai số tái lặp):
 
 $$
 
@@ -147,7 +147,7 @@ $$
 
 Vì độ dài các tháng không giống nhau, đặc biệt là vì độ dài của <b>tháng 2 không cố định</b>, ban đầu việc tính toán hệ số ngày trong một năm rất bất khả thi nếu không tra bảng và kiểm tra các năm nhuận. Tuy nhiên, ta có thể dễ dàng vượt qua vấn đề này bằng cách <b>định nghĩa đầu năm của lịch là tháng 3</b>. 
 
-| Month Index (m)       | Tháng         | Số ngày trong tháng   | Day offset (d)    |
+| Chỉ số tháng (month_index)       | Tháng         | Số ngày trong tháng   | Vị trí ngày (day_index)    |
 | :--------             | :--------     | :-------------        | :-------------    |
 |         0             |       3       | 31                    | 0                 |
 |         1             |       4       | 30                    | 31                |
@@ -162,55 +162,55 @@ Vì độ dài các tháng không giống nhau, đặc biệt là vì độ dài
 |         10            |       1       | 31                    | 306               |
 |         11            |       2       | 28 hoặc 29            | 337               |
 
-> Nếu năm nhuận thì số ngày tháng 2 là 29, tức tháng 2 lúc đó lệch +1, nhưng không làm thay đổi offset các tháng trước vì kết thúc ở $m = 11$.
+> Nếu năm nhuận thì số ngày tháng 2 là 29, tức tháng 2 lúc đó lệch +1, nhưng không làm thay đổi offset các tháng trước vì kết thúc ở $\text{month_index} = 11$.
 {: .prompt-info }
 
-Việc đánh số tháng theo cách này có ưu điểm đặc biệt là <b>ngày nhuận luôn được thêm vào cuối năm (m = 11)</b>, và không làm thay đổi hệ số ngày của đầu các tháng trong năm. Bằng cách sử dụng hồi quy tuyến tính cơ bản trên <b>chỉ số tháng (month index)</b> và <b>vị trí ngày (day offset)</b>, ta có thể tìm các hàm để ánh xạ lẫn nhau. 
+Việc đánh số tháng theo cách này có ưu điểm đặc biệt là <b>ngày nhuận luôn được thêm vào cuối năm ($\text{month_index} = 11$)</b>, và không làm thay đổi hệ số ngày của đầu các tháng trong năm. Bằng cách sử dụng hồi quy tuyến tính cơ bản trên <b>chỉ số tháng ($\text{month_index}$)</b> và <b>vị trí ngày ($\text{day_index}$)</b>, ta có thể tìm các hàm để ánh xạ lẫn nhau. 
 
-Ta có tổng số ngày của 10 tháng (từ tháng 3 đến tháng 12) là 306 ngày. Nên sau mỗi 10 bước $m$ (từ 0 đến 9), ta đã dịch chuyển đúng 306 ngày. Nói cách khác, “trung bình” cứ mỗi bước tăng $m$ (chuyển sang tháng tiếp theo), số ngày dời đi khoảng $\frac{306}{10} = 30.6$ ngày
+Ta có tổng số ngày của 10 tháng (từ tháng 3 đến tháng 12) là 306 ngày. Nên sau mỗi 10 bước $\text{month_index}$ (từ 0 đến 9), ta đã dịch chuyển đúng 306 ngày. <b>Nói cách khác, “trung bình” cứ mỗi bước tăng $\text{month_index}$ thì số ngày dời đi khoảng $\frac{306}{10} = 30.6$ ngày.</b>
 
-Ta muốn công thức cho kết quả nguyên chính xác bằng “tổng số ngày đã trôi qua kể từ đầu tháng 3 của năm đó” khi $m$ là một số nguyên 0, 1, 2, … Cho ví dụ:
-- Với m = 0 (tháng 3) $\Rightarrow d = 0$
-- Với m = 1 (tháng 4) $\Rightarrow d = 31$
-- Với m = 2 (tháng 5) $\Rightarrow d = 61$
+Ta muốn công thức cho kết quả nguyên chính xác bằng “tổng số ngày đã trôi qua kể từ đầu tháng 3 của năm đó” khi $\text{month_index}$ là một số nguyên 0, 1, 2, … Cho ví dụ:
+- Với $\text{month_index} = 0$ (tháng 3) $\Rightarrow \text{day_index} = 0$
+- Với $\text{month_index} = 1$ (tháng 4) $\Rightarrow \text{day_index} = 31$
+- Với $\text{month_index} = 2$ (tháng 5) $\Rightarrow \text{day_index} = 61$
 - ...
-- Với m = 10 (tháng 1) $\Rightarrow d = 306$
+- Với $\text{month_index} = 10$ (tháng 1) $\Rightarrow \text{day_index} = 306$
 
-Nếu ta chỉ dùng thẳng công thức "$30.6m$" rồi làm tròn xuống $\lfloor30.6m\rfloor$, thì sẽ bị lệch 1 ngày do phần thập phân. Để khắc phục, cần biểu diễn "$30.6m$" dưới dạng phân số có mẫu 10 rồi cộng một hằng số $C = 5$ bù để khi làm tròn luôn ra số nguyên gần nhất đảm bảo đúng kết quả.
+Nếu ta chỉ dùng thẳng công thức "$30.6 * \text{month_index}$" rồi làm tròn xuống $\lfloor30.6 * \text{month_index}\rfloor$, thì sẽ bị lệch 1 ngày do phần thập phân. Để khắc phục, cần biểu diễn "$30.6 * \text{month_index}$" dưới dạng phân số có mẫu 10 rồi cộng một hằng số $C = 5$ bù để khi làm tròn luôn ra số nguyên gần nhất đảm bảo đúng kết quả.
 
 Qua đó, ta có thể tính số ngày kể từ đầu năm <b>(ngày 1 tháng 3 được coi là ngày 0)</b> của ngày mùng 1 của tháng đó bằng phần nguyên của hàm:
 
 $$
 \begin{equation}
-    d = \text{getDayOffset}(\text{month_index}) = \lfloor\frac{306*\text{month_index} + 5}{10}\rfloor
-    \label{eq:getdayoffset}
+    \text{day_index} = \text{getDayIndex}(\text{month_index}) = \lfloor\frac{306*\text{month_index} + 5}{10}\rfloor
+    \label{eq:getdayindex}
 \end{equation}
 $$
 
-<b>Ngược lại</b>, cho trước hệ số ngày d tính từ đầu năm (bắt đầu từ m = 0), ta muốn tìm chỉ số tháng m, ta có:
+<b>Ngược lại</b>, cho trước hệ số ngày day_index tính từ đầu năm (bắt đầu từ month_index = 0), ta muốn tìm chỉ số tháng month_index, ta có:
 
 $$
-d = \lfloor\frac{306m + 5}{10}\rfloor
-$$
-
-$$
-\Longleftrightarrow d \leq \frac{306m + 5}{10} < d + 1
+\text{day_index} = \lfloor\frac{306*\text{month_index} + 5}{10}\rfloor
 $$
 
 $$
-\Longleftrightarrow \frac{10d - 5}{306} \leq m < \frac{10d + 5}{306}
+\Longleftrightarrow \text{day_index} \leq \frac{306*\text{month_index} + 5}{10} < \text{day_index} + 1
 $$
 
-Vì m là số nguyên (từ 0 đến 11), điều này cho ta:
+$$
+\Longleftrightarrow \frac{10*\text{day_index} - 5}{306} \leq \text{month_index} < \frac{10*\text{day_index} + 5}{306}
+$$
+
+Vì $\text{month_index}$ là số nguyên (từ 0 đến 11), điều này cho ta:
 
 $$
 \begin{equation}
-    m = \text{getMonthIndex}(\text{day_index})= \lfloor\frac{10*\text{day_index} + 5}{306}\rfloor
+    \text{month_index} = \text{getMonthIndex}(\text{day_index})= \lfloor\frac{10*\text{day_index} + 5}{306}\rfloor
     \label{eq:getmonthindex}
 \end{equation}
 $$
 
-> Lưu ý: Tháng 1 và tháng 2 (m = 10 và m = 11) sẽ được xem như là <b>năm trước</b> theo thuật toán
+> Lưu ý: Tháng 1 và tháng 2 ($\text{month_index} = 10$ và $\text{month_index} = 11$) sẽ được xem như là <b>năm trước</b> theo thuật toán
 {: .prompt-warning }
 
 > Lưu ý: Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/)).
@@ -227,7 +227,7 @@ struct gdate {
     gdate(ll d_, ll m_, ll y_) : d(d_), m(m_), y(y_) {} // Constructor
 
     // month_index: 0 (Tháng 3) ... 11 (Tháng 2 năm sau)
-    ll getDayOffset(int month_index) {
+    ll getDayIndex(int month_index) {
         return (306 * month_index + 5) / 10; // công thức (5)
     }
 
@@ -254,7 +254,7 @@ struct gdate {
         // Tổng số ngày = (số ngày từ mốc đến đầu năm fixedy)
         //               + (số ngày từ đầu năm fixedy đến đầu tháng month_index)
         //               + (số ngày trong tháng hiện tại - 1) (vì ngày 1 được coi là Day offset 0)
-        return D(fixedy) + getDayOffset(month_index) + (d - 1);
+        return D(fixedy) + getDayIndex(month_index) + (d - 1);
 
     }
 
@@ -274,7 +274,7 @@ struct gdate {
         // Từ ddd và month_index, tính ra ngày trong tháng (final_d)
         // final_d = ddd - (số ngày từ ngày 1 tháng 3 đến đầu month_index) + 1 (vì ngày trong lịch bắt đầu từ 1)
         int month_index = (10 * day_index + 5) / 306; // công thức 6
-        ll final_d = day_index - getDayOffset(month_index) + 1;
+        ll final_d = day_index - getDayIndex(month_index) + 1;
 
         // Chuyển month_index (0-11) về tháng chuẩn (1-12) (final_m)
         // month_index 0 (Mar) -> (0+2)%12+1 = 3
