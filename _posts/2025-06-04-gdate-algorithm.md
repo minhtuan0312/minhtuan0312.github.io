@@ -245,8 +245,7 @@ struct gdate {
         // Tháng 12 (Dec) -> month_index = 9
         int month_index = (m + 9) % 12;
 
-        // Điều chỉnh năm: Nếu tháng là tháng 1 hoặc 2 (month_index = 10 hoặc 11)
-        // thì năm tính toán (fixedy) sẽ là năm hiện tại trừ 1.
+        // Nếu tháng là tháng 1 hoặc 2 (month_index = 10 hoặc 11) thì năm tính toán (fixedy) sẽ là năm hiện tại trừ 1.
         // Ví dụ: 1/1/2025 (m=1, y=2025) -> month_index=10. fixedy = 2025 - 10/10 = 2024.
         // Điều này là do tháng 1, 2 của năm Y được coi là năm trước.
         ll fixedy = y - month_index / 10;
