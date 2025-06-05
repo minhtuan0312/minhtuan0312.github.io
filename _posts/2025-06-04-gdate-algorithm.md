@@ -73,7 +73,7 @@ $$
 \end{equation}
 $$
 
-Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7)
+Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7){:target="_blank"}
 
 Hàm rời rạc[^hamroirac] này là nguồn gốc của quy tắc năm nhuận trong lịch Gregorius. Hàm \eqref{eq:dayeq2} xấp xỉ rất gần với hàm thực \eqref{eq:dayeq1}, và dấu "$=$" xảy ra khi y chia hết 400. Trong khoảng 400 năm này, sai số lớn nhất là 1.4775 ngày vào năm 303 của chu kỳ, và −0.72 ngày vào năm 96 của chu kỳ. Do sai số này, việc tìm năm khi biết số ngày (hàm ngược) không hoàn toàn chính xác, nhưng ta có thể tìm một xấp xỉ rất gần. 
 
@@ -112,7 +112,7 @@ $$
 
 #### Cách khắc phục
 
-Để khắc phục sai lệch trên, đầu tiên ta đưa công thức \eqref{eq:approxy} về dạng <b>tính toán với số nguyên để tránh sai số do tính toán với số dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic)):
+Để khắc phục sai lệch trên, đầu tiên ta đưa công thức \eqref{eq:approxy} về dạng <b>tính toán với số nguyên để tránh sai số do tính toán với số dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic){:target="_blank"}):
 
 $$
 y_{approx} = \frac{d}{365.2425} = \frac{d * 10000}{365.2425 * 10000} = \frac{10000d}{3652425}
@@ -213,7 +213,7 @@ $$
 > Lưu ý: Tháng 1 và tháng 2 ($\text{month_index} = 10$ và $\text{month_index} = 11$) sẽ được xem như là <b>năm trước</b> theo thuật toán
 {: .prompt-warning }
 
-> Lưu ý: Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/)).
+> Lưu ý: Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/){:target="_blank"}).
 {: .prompt-warning }
 
 ## Mã giải (C++)
@@ -352,31 +352,31 @@ string s = buf;
 {: .prompt-tip }
 
 ## Bài tập rèn luyện
-<https://www.spoj.com/problems/CODEIT03>
+<https://www.spoj.com/problems/CODEIT03>{:target="_blank"}
 
-<https://www.spoj.com/problems/NXTDAY>
+<https://www.spoj.com/problems/NXTDAY>{:target="_blank"}
 
-<https://www.spoj.com/problems/MOZSATDOW>
+<https://www.spoj.com/problems/MOZSATDOW>{:target="_blank"}
 
-<https://gm.spoj.com/SHORTEN/problems/GREGCAL/>
+<https://gm.spoj.com/SHORTEN/problems/GREGCAL/>{:target="_blank"}
 
-<https://www.spoj.com/problems/TEASTER/>
+<https://www.spoj.com/problems/TEASTER/>{:target="_blank"}
 
-<https://www.hackerrank.com/contests/iiti-league-contest-2/challenges/days-shift/problem>
+<https://www.hackerrank.com/contests/iiti-league-contest-2/challenges/days-shift/problem>{:target="_blank"}
 
-<https://codeforces.com/contest/304/problem/B>
+<https://codeforces.com/contest/304/problem/B>{:target="_blank"}
 
-<https://marisaoj.com/problem/531>
+<https://marisaoj.com/problem/531>{:target="_blank"}
 
-<https://onlinejudge.org/external/8/p893.pdf>
+<https://onlinejudge.org/external/8/p893.pdf>{:target="_blank"}
 
-<https://lqdoj.edu.vn/problem/semester>
+<https://lqdoj.edu.vn/problem/semester>{:target="_blank"}
 
-<https://oj.vnoi.info/problem/coci1920_r6_datum>
+<https://oj.vnoi.info/problem/coci1920_r6_datum>{:target="_blank"}
 
 ## Nguồn tham khảo
-- [G.Katchalski, “GDate method (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html)
-- [G.Katchalski, “GDate algorithm (Archived)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html)
+- [G.Katchalski, “GDate method (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html){:target="_blank"}
+- [G.Katchalski, “GDate algorithm (Archived)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html){:target="_blank"}
 
 #### Ghi chú
 [^hamroirac]: Hàm rời rạc: Hàm lấy phần nguyên và bỏ qua phần dư
