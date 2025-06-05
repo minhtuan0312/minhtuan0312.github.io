@@ -26,7 +26,7 @@ Và sau đây mình xin được giới thiệu với các bạn một thuật t
 
 Để thực hiện các phép tính ngày tháng, dầu tiên ta phải biến đổi lịch $(d, m, y)$ thành một số nguyên đại diện cho ngày. Nếu chúng ta chọn <b>ngày 0</b> làm ngày cơ sở hợp lý thì việc tính toán sẽ trở nên rất dễ dàng. Trong thuật toán GDate, ngày cơ sở được chọn là <b>ngày 1 tháng 3 của năm 0</b>.
 
-> Lưu ý rằng năm 0 này không phải là năm 0 trong lịch Gregorius thực, mà chỉ là <b>một mốc tham chiếu</b>. Tuy nhiên, các phép tính liên quan đến những ngày sau khi thiết lập lịch Gregorius sẽ trả vể kết quả chính xác
+> Lưu ý rằng năm 0 này không phải là năm 0 trong lịch Gregorius thực, mà chỉ là <b>một mốc tham chiếu</b>. Tuy nhiên, các phép tính liên quan đến những ngày sau và trước khi thiết lập lịch Gregorius vẫn sẽ trả vể kết quả chính xác.
 {: .prompt-warning }
 
 ## Tính toán năm
@@ -38,7 +38,7 @@ Tuy nhiên, điều này sẽ dẫn đến sai số $\approx$0,0078 ngày (0,25 
 - 100 năm dư 0,78 ngày
 - 128 năm dư $\approx$1 ngày
 
-$\to$ Nghĩa là sau 128 năm, lịch sẽ lệch $\approx$1 ngày so với chu kỳ thiên văn thực.
+$\Rightarrow$ Nghĩa là sau 128 năm, lịch sẽ lệch $\approx$1 ngày so với chu kỳ thiên văn thực.
 
 #### Lịch Gregorius (10/1582)
 Nhằm khắc phục việc bị “dư” 0,0078 ngày mỗi năm, Giáo hoàng Gregory XIII đã ban hành lịch Gregory vào tháng 10 năm 1582 với hai quy tắc chính:
@@ -73,7 +73,7 @@ $$
 \end{equation}
 $$
 
-Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. (nguyên tắc bao hàm - loại trừ.)
+Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7)
 
 Hàm rời rạc[^hamroirac] này là nguồn gốc của quy tắc năm nhuận trong lịch Gregorius. Hàm \eqref{eq:dayeq2} xấp xỉ rất gần với hàm thực \eqref{eq:dayeq1}, và dấu "$=$" xảy ra khi y chia hết 400. Trong khoảng 400 năm này, sai số lớn nhất là 1.4775 ngày vào năm 303 của chu kỳ, và −0.72 ngày vào năm 96 của chu kỳ. Do sai số này, việc tìm năm khi biết số ngày (hàm ngược) không hoàn toàn chính xác, nhưng ta có thể tìm một xấp xỉ rất gần. 
 
@@ -213,7 +213,7 @@ $$
 > Lưu ý: Tháng 1 và tháng 2 (m = 10 và m = 11) sẽ được xem như là <b>năm trước</b> theo thuật toán
 {: .prompt-warning }
 
-> Lưu ý: Trong lịch Gregorius, ngày 1/3/ Năm 0 thực chất rơi vào thứ Tư (Wednesday).
+> Lưu ý: Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/)).
 {: .prompt-warning }
 
 ## Mã giải (c++)
@@ -258,7 +258,7 @@ struct gdate {
 
     }
 
-    // Chuyển đổi tổng số ngày (tính từ mốc 1/3/Năm 0) sang (d, m, y)
+    // Chuyển đổi tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) sang (d, m, y)
     gdate toDate(ll total_days) {
 
         ll y = (total_days * 10000 + 14775) / 3652425; // công thức (4)
@@ -272,7 +272,7 @@ struct gdate {
         }
 
         // Từ ddd và month_index, tính ra ngày trong tháng (final_d)
-        // final_d = ddd - (số ngày từ 1/3 đến đầu month_index) + 1 (vì ngày trong lịch bắt đầu từ 1)
+        // final_d = ddd - (số ngày từ ngày 1 tháng 3 đến đầu month_index) + 1 (vì ngày trong lịch bắt đầu từ 1)
         int month_index = (10 * day_index + 5) / 306; // công thức 6
         ll final_d = day_index - getDayOffset(month_index) + 1;
 
@@ -331,7 +331,7 @@ cout << ((d == check.d && m == check.m && y == check.y) ? "ok" : "no");
 ```c++
 string day[7] = { "wednesday", "thursday", "friday", "saturday", "sunday", "monday", "tuesday" };
 gdate lich(d, m, y);
-cout << day[(lich.toDays()) % 7]; // (1/3/Năm 0) là thứ 4
+cout << day[(lich.toDays()) % 7]; // ngày 1 tháng 3 năm 0 là thứ 4
 ```
 
 > Tips xử lý DDMMYYYY :3
