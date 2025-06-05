@@ -226,73 +226,78 @@ struct gdate {
     gdate() : d(0), m(0), y(0) {} 
     gdate(ll d_, ll m_, ll y_) : d(d_), m(m_), y(y_) {} // Constructor
 
-    // month_index: 0 (Tháng 3) ... 11 (Tháng 2 năm sau)
-    ll getDayIndex(int month_index) {
-        return (306 * month_index + 5) / 10; // (5)
+    friend ostream& operator << (ostream& out, const gdate& x) { // in nhanh
+        return out << x.d << ' ' << x.m << ' ' << x.y, out;
     }
 
-    ll D(ll y) { 
-        return 365 * y + y / 4 - y / 100 + y / 400; // (2)
+};
+
+// month_index: 0 (Tháng 3) ... 11 (Tháng 2 năm sau)
+ll getDayIndex(int month_index) {
+    return (306 * month_index + 5) / 10; // (5)
+}
+
+ll D(ll y) { 
+    return 365 * y + y / 4 - y / 100 + y / 400; // (2)
+}
+
+ // Chuyển đổi (d, m, y) sang tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) 
+ ll toDays(gdate date) {
+
+     // Chuyển tháng hiện tại (1-12) sang month_index (0-11), với tháng 3 là 0
+     // Tháng 1 -> month_index = 10
+     // Tháng 2 -> month_index = 11
+     // Tháng 3 -> month_index = 0
+     // ...
+     // Tháng 12 (Dec) -> month_index = 9
+     int month_index = (date.m + 9) % 12;
+
+     // Nếu tháng là tháng 1 hoặc 2 (month_index = 10 hoặc 11) thì năm tính toán (fixedy) sẽ là năm hiện tại trừ 1.
+     // Ví dụ: 1/1/2025 (m=1, y=2025) -> month_index=10. fixedy = 2025 - 10/10 = 2024.
+     // Điều này là do tháng 1, 2 của năm Y được coi là năm trước.
+     ll fixedy = date.y - month_index / 10;
+
+     // Tổng số ngày = (số ngày từ mốc đến đầu năm fixedy)
+     //               + (số ngày từ đầu năm fixedy đến đầu tháng month_index)
+     //               + (số ngày trong tháng hiện tại - 1) (vì ngày 1 được coi là day index 0)
+     return D(fixedy) + getDayIndex(month_index) + (date.d - 1);
+
+ }
+
+// Chuyển đổi tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) sang (d, m, y)
+gdate toDate(ll total_days) {
+
+    ll y = (total_days * 10000 + 14775) / 3652425; // (4)
+    // day_index là số ngày thứ bao nhiêu trong "năm thuật toán" y.
+    ll day_index = total_days - D(y);
+    // Nếu day_index < 0, nghĩa là total_days thực tế nằm ở cuối năm năm trước.
+    // Ta giảm y đi 1 và tính lại day_index.
+    if (day_index < 0) {
+        y--;
+        day_index = total_days - D(y);
     }
 
-    // Chuyển đổi (d, m, y) sang tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) 
-    ll toDays() {
+    // Từ ddd và month_index, tính ra ngày trong tháng (final_d)
+    // final_d = ddd - (số ngày từ ngày 1 tháng 3 đến đầu month_index) + 1 (vì ngày trong lịch bắt đầu từ 1)
+    int month_index = (10 * day_index + 5) / 306; // (6)
+    ll final_d = day_index - getDayIndex(month_index) + 1;
 
-        // Chuyển tháng hiện tại (1-12) sang month_index (0-11), với tháng 3 là 0
-        // Tháng 1 -> month_index = 10
-        // Tháng 2 -> month_index = 11
-        // Tháng 3 -> month_index = 0
-        // ...
-        // Tháng 12 (Dec) -> month_index = 9
-        int month_index = (m + 9) % 12;
+    // Chuyển month_index (0-11) về tháng chuẩn (1-12) (final_m)
+    // month_index 0 (Mar) -> (0+2)%12+1 = 3
+    // month_index 9 (Dec) -> (9+2)%12+1 = 12
+    // month_index 10 (Jan) -> (10+2)%12+1 = 1
+    // month_index 11 (Feb) -> (11+2)%12+1 = 2
+    ll final_m = (month_index + 2) % 12 + 1;
 
-        // Nếu tháng là tháng 1 hoặc 2 (month_index = 10 hoặc 11) thì năm tính toán (fixedy) sẽ là năm hiện tại trừ 1.
-        // Ví dụ: 1/1/2025 (m=1, y=2025) -> month_index=10. fixedy = 2025 - 10/10 = 2024.
-        // Điều này là do tháng 1, 2 của năm Y được coi là năm trước.
-        ll fixedy = y - month_index / 10;
+    // Điều chỉnh lại năm (final_y)
+    // Nếu month_index là 10 (tháng 1) hoặc 11 (tháng 2), thì năm thực tế (final_y) phải là y + 1.
+    // Ví dụ: nếu month_index = 10 (tháng 1), (10+2)/12 = 1. Năm sẽ được cộng thêm 1.
+    ll final_y = y + (month_index + 2) / 12;
 
-        // Tổng số ngày = (số ngày từ mốc đến đầu năm fixedy)
-        //               + (số ngày từ đầu năm fixedy đến đầu tháng month_index)
-        //               + (số ngày trong tháng hiện tại - 1) (vì ngày 1 được coi là Day offset 0)
-        return D(fixedy) + getDayIndex(month_index) + (d - 1);
-
-    }
-
-    // Chuyển đổi tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) sang (d, m, y)
-    gdate toDate(ll total_days) {
-
-        ll y = (total_days * 10000 + 14775) / 3652425; // (4)
-        // day_index là số ngày thứ bao nhiêu trong "năm thuật toán" y.
-        ll day_index = total_days - D(y);
-        // Nếu day_index < 0, nghĩa là total_days thực tế nằm ở cuối năm năm trước.
-        // Ta giảm y đi 1 và tính lại day_index.
-        if (day_index < 0) {
-            y--;
-            day_index = total_days - D(y);
-        }
-
-        // Từ ddd và month_index, tính ra ngày trong tháng (final_d)
-        // final_d = ddd - (số ngày từ ngày 1 tháng 3 đến đầu month_index) + 1 (vì ngày trong lịch bắt đầu từ 1)
-        int month_index = (10 * day_index + 5) / 306; // (6)
-        ll final_d = day_index - getDayIndex(month_index) + 1;
-
-        // Chuyển month_index (0-11) về tháng chuẩn (1-12) (final_m)
-        // month_index 0 (Mar) -> (0+2)%12+1 = 3
-        // month_index 9 (Dec) -> (9+2)%12+1 = 12
-        // month_index 10 (Jan) -> (10+2)%12+1 = 1
-        // month_index 11 (Feb) -> (11+2)%12+1 = 2
-        ll final_m = (month_index + 2) % 12 + 1;
-
-        // Điều chỉnh lại năm (final_y)
-        // Nếu month_index là 10 (tháng 1) hoặc 11 (tháng 2), thì năm thực tế (final_y) phải là y + 1.
-        // Ví dụ: nếu month_index = 10 (tháng 1), (10+2)/12 = 1. Năm sẽ được cộng thêm 1.
-        ll final_y = y + (month_index + 2) / 12;
-
-        return gdate(final_d, final_m, final_y);
-
-    }
+    return gdate(final_d, final_m, final_y);
 
 }
+
 ```
 
 Độ phức tạp của các thao tác tính toán trên tổng thể chỉ mất $O(1)$, do đó rất hiệu quả.
@@ -303,9 +308,9 @@ struct gdate {
 {: .prompt-info }
 
 ```c++
-gdate lich1(d1, m1, y1)
-gdate lich2(d2, m2, y2)
-cout << abs(lich1.toDays() - lich2.toDays());
+gdate lich1(d1, m1, y1);
+gdate lich2(d2, m2, y2);
+cout << abs(toDays(lich1) - toDays(lich2));
 ```
 
 > (d, m, y) sau khi tăng / giảm x ngày
@@ -313,8 +318,7 @@ cout << abs(lich1.toDays() - lich2.toDays());
 
 ```c++
 gdate lich(d, m, y);
-gdate new_lich(lich.toDays() + x); // gdate new_lich(lich.toDays() - x);
-cout << new_lich.d << ' ' << new_lich.m << ' ' << new_lich.y;
+cout << toDate(toDays(lich) + x); // toDate(toDays(lich) - x);
 ```
 
 > Kiểm tra ngày hợp lý
@@ -322,7 +326,7 @@ cout << new_lich.d << ' ' << new_lich.m << ' ' << new_lich.y;
 
 ```c++
 gdate lich(d, m, y);
-gdate check = lich.toDate(lich.toDays());
+gdate check = toDate(toDays(lich));
 cout << ((d == check.d && m == check.m && y == check.y) ? "ok" : "no");
 ```
 
@@ -332,7 +336,7 @@ cout << ((d == check.d && m == check.m && y == check.y) ? "ok" : "no");
 ```c++
 string day[7] = { "wednesday", "thursday", "friday", "saturday", "sunday", "monday", "tuesday" };
 gdate lich(d, m, y);
-cout << day[(lich.toDays()) % 7]; // ngày 1 tháng 3 năm 0 là thứ 4
+cout << day[(toDays(lich)) % 7]; // ngày 1 tháng 3 năm 0 là thứ 4
 ```
 
 > Tips xử lý DDMMYYYY :3
