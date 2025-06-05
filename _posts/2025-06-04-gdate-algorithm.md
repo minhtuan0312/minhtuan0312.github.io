@@ -216,7 +216,7 @@ $$
 > Lưu ý: Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/)).
 {: .prompt-warning }
 
-## Mã giải (c++)
+## Mã giải (C++)
 
 ```c++
 
@@ -228,11 +228,11 @@ struct gdate {
 
     // month_index: 0 (Tháng 3) ... 11 (Tháng 2 năm sau)
     ll getDayIndex(int month_index) {
-        return (306 * month_index + 5) / 10; // công thức (5)
+        return (306 * month_index + 5) / 10; // (5)
     }
 
     ll D(ll y) { 
-        return 365 * y + y / 4 - y / 100 + y / 400; // công thức (2)
+        return 365 * y + y / 4 - y / 100 + y / 400; // (2)
     }
 
     ll toDays() {
@@ -261,7 +261,7 @@ struct gdate {
     // Chuyển đổi tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) sang (d, m, y)
     gdate toDate(ll total_days) {
 
-        ll y = (total_days * 10000 + 14775) / 3652425; // công thức (4)
+        ll y = (total_days * 10000 + 14775) / 3652425; // (4)
         // day_index là số ngày thứ bao nhiêu trong "năm thuật toán" y.
         ll day_index = total_days - D(y);
         // Nếu day_index < 0, nghĩa là total_days thực tế nằm ở cuối năm năm trước.
@@ -273,7 +273,7 @@ struct gdate {
 
         // Từ ddd và month_index, tính ra ngày trong tháng (final_d)
         // final_d = ddd - (số ngày từ ngày 1 tháng 3 đến đầu month_index) + 1 (vì ngày trong lịch bắt đầu từ 1)
-        int month_index = (10 * day_index + 5) / 306; // công thức 6
+        int month_index = (10 * day_index + 5) / 306; // (6)
         ll final_d = day_index - getDayIndex(month_index) + 1;
 
         // Chuyển month_index (0-11) về tháng chuẩn (1-12) (final_m)
@@ -358,8 +358,6 @@ string s = buf;
 <https://www.spoj.com/problems/NXTDAY>
 
 <https://www.spoj.com/problems/MOZSATDOW>
-
-<https://www.spoj.com/problems/CODEIT03/>
 
 <https://gm.spoj.com/SHORTEN/problems/GREGCAL/>
 
