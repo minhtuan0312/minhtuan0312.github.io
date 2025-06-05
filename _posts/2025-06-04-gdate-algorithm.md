@@ -362,7 +362,7 @@ string s = buf;
 
 <https://www.spoj.com/problems/MOZSATDOW>{:target="_blank"}
 
-<https://gm.spoj.com/SHORTEN/problems/GREGCAL/>{:target="_blank"}
+<https://www.spoj.com/SHORTEN/problems/GREGCAL/>{:target="_blank"}
 
 <https://www.spoj.com/problems/TEASTER/>{:target="_blank"}
 
