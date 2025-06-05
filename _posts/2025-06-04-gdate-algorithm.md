@@ -296,6 +296,8 @@ struct gdate {
 
 ```
 
+Độ phức tạp của các thao tác tính toán trên tổng thể chỉ mất $O(1)$, do đó rất hiệu quả.
+
 ## Ứng dụng
 
 > In ra sự khác biệt giữa hai (d, m, y)
