@@ -375,8 +375,8 @@ string s = buf;
 <https://oj.vnoi.info/problem/coci1920_r6_datum>
 
 ## Nguồn tham khảo
-- [G.Katchalski, “GDate algorithm” (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html)
-- [Mã gốc (bản được lưu trữ)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html)
+- [G.Katchalski, “GDate method (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html)
+- [G.Katchalski, “GDate algorithm (Archived)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html)
 
 #### Ghi chú
 [^hamroirac]: Hàm rời rạc: Hàm lấy phần nguyên và bỏ qua phần dư
