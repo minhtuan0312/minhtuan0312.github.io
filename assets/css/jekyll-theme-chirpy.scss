@@ -9,3 +9,19 @@
 ';
 
 /* append your custom style below */
+
+h1.card-title,
+h1[data-toc-skip] {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+
+p.site-subtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+}
+
+p.site-subtitle span {
+  display: block; /* Forces each span to a new line */
+  line-height: 1.6;
+}
