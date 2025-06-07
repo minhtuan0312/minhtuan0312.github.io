@@ -9,27 +9,3 @@
 ';
 
 /* append your custom style below */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
-
-
-h1.card-title {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-}
-
-h1[data-toc-skip] {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-}
-
-p.site-subtitle {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-}
-
-p.site-subtitle span {
-  display: block; /* Buộc mỗi span xuống dòng */
-  line-height: 1.6; /* Tùy chỉnh khoảng cách giữa 2 dòng nếu cần */
-}
