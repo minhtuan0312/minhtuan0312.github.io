@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Sốc!!🤯 Thuật Toán Chuyển Đổi Thời Gian Hiệu Quả Trong O(1)⌛
+title: Sốc!!🤯 Thuật toán chuyển đổi thời gian hiệu quả trong O(1)⌛
 date: 2025-06-04 09:42 +0700
 categories: [thuật toán]
 tags: [thời gian, lịch, date]
@@ -241,28 +241,28 @@ ll D(ll y) {
     return 365 * y + y / 4 - y / 100 + y / 400; // (2)
 }
 
- // Chuyển đổi (d, m, y) sang tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) 
- ll toDays(gdate date) {
+// Chuyển đổi (d, m, y) sang tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) 
+ll toDays(gdate date) {
 
-     // Chuyển tháng hiện tại (1-12) sang month_index (0-11), với tháng 3 là 0
-     // Tháng 1 -> month_index = 10
-     // Tháng 2 -> month_index = 11
-     // Tháng 3 -> month_index = 0
-     // ...
-     // Tháng 12 (Dec) -> month_index = 9
-     int month_index = (date.m + 9) % 12;
+    // Chuyển tháng hiện tại (1-12) sang month_index (0-11), với tháng 3 là 0
+    // Tháng 1 -> month_index = 10
+    // Tháng 2 -> month_index = 11
+    // Tháng 3 -> month_index = 0
+    // ...
+    // Tháng 12 (Dec) -> month_index = 9
+    int month_index = (date.m + 9) % 12;
 
-     // Nếu tháng là tháng 1 hoặc 2 (month_index = 10 hoặc 11) thì năm tính toán (fixedy) sẽ là năm hiện tại trừ 1.
-     // Ví dụ: 1/1/2025 (m=1, y=2025) -> month_index=10. fixedy = 2025 - 10/10 = 2024.
-     // Điều này là do tháng 1, 2 của năm Y được coi là năm trước.
-     ll fixedy = date.y - month_index / 10;
+    // Nếu tháng là tháng 1 hoặc 2 (month_index = 10 hoặc 11) thì năm tính toán (fixedy) sẽ là năm hiện tại trừ 1.
+    // Ví dụ: 1/1/2025 (m=1, y=2025) -> month_index=10. fixedy = 2025 - 10/10 = 2024.
+    // Điều này là do tháng 1, 2 của năm Y được coi là năm trước.
+    ll fixedy = date.y - month_index / 10;
 
-     // Tổng số ngày = (số ngày từ mốc đến đầu năm fixedy)
-     //               + (số ngày từ đầu năm fixedy đến đầu tháng month_index)
-     //               + (số ngày trong tháng hiện tại - 1) (vì ngày 1 được coi là day index 0)
-     return D(fixedy) + getDayIndex(month_index) + (date.d - 1);
+    // Tổng số ngày = (số ngày từ mốc đến đầu năm fixedy)
+    //               + (số ngày từ đầu năm fixedy đến đầu tháng month_index)
+    //               + (số ngày trong tháng hiện tại - 1) (vì ngày 1 được coi là day index 0)
+    return D(fixedy) + getDayIndex(month_index) + (date.d - 1);
 
- }
+}
 
 // Chuyển đổi tổng số ngày (tính từ mốc ngày 1 tháng 3 của năm 0) sang (d, m, y)
 gdate toDate(ll total_days) {
