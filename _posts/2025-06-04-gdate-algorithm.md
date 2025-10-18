@@ -1,17 +1,17 @@
 ---
 layout: post
-title: Sốc!!🤯 Thuật toán chuyển đổi thời gian hiệu quả trong O(1)⌛
+title: Thuật toán chuyển đổi thời gian hiệu quả trong O(1)⌛
 date: 2025-06-04 09:42 +0700
 categories: [thuật toán]
 tags: [thời gian, lịch, date]
 math: true
 ---
-Xin chào các bạn!!! Đây là blog đầu tiên của mình nên có thể mình viết chưa được chuyên nghiệp cho lắm, mọi góp ý, sai sót sẽ được mình tiếp nhận để mình cải thiện trong việc viết blog ^^
+> Mọi góp ý, sai sót sẽ được mình tiếp nhận để mình cải thiện trong việc viết blog orz
 
 ![Lịch Gregorius](/assets/img/Gregorian Calendar.jpg)
 _Lịch Gregorius (hệ thống lịch của thế giới ngày nay)_
 
-Và sau đây mình xin được giới thiệu với các bạn một thuật toán rất độc lạ, song mạnh mẽ và hiệu quả trong việc xử lý ngày tháng mà hầu như mình chưa thấy nguồn tiếng Việt nào nhắc tới. Với tên gọi <b>"Thuật toán GDate"</b> - Thuật toán ban đầu được gợi ý bởi Gary Katch và đã được sử dụng rộng rãi trong các thư viện xử lý ngày tháng.
+<!-- Sau đây mình xin được giới thiệu với các bạn <b>thuật toán GDate</b> của <i>Gary Katch</i>. Một thuật toán rất mạnh mẽ, độc đáo và hiệu quả trong việc xử lý ngày tháng, lịch mà hầu như mình chưa thấy nguồn tiếng Việt nào nhắc tới.
 
 | Ưu điểm                                                                           |
 | :-------------------------------------------------------------------------------- |
@@ -20,118 +20,205 @@ Và sau đây mình xin được giới thiệu với các bạn một thuật t
 
 | Nhược điểm |
 | :----------|
-| Rất khó để cài đặt nếu không hiểu bản chất |
+| Rất khó thấm | -->
 
-## Bối cảnh
+## Đặt vấn đề
 
-Để thực hiện các phép tính ngày tháng, dầu tiên ta phải biến đổi lịch $(d, m, y)$ thành một số nguyên đại diện cho ngày. Nếu chúng ta chọn <b>ngày 0</b> làm ngày cơ sở hợp lý thì việc tính toán sẽ trở nên rất dễ dàng. Trong thuật toán GDate, ngày cơ sở được chọn là <b>ngày 1 tháng 3 của năm 0</b>.
+#### <b>Đề bài</b>
+![Desktop View](/assets/img/Jailproblem.png){: width="200" height="200" .w-60 .right}
 
-> Lưu ý rằng năm 0 này không phải là năm 0 trong lịch Gregorius thực, mà chỉ là <b>một mốc tham chiếu</b>. Tuy nhiên, các phép tính liên quan đến những ngày sau và trước khi thiết lập lịch Gregorius vẫn sẽ trả vể kết quả chính xác.
-{: .prompt-warning }
+Vậy là kì thi HSG khốc liệt đã kết thúc, Tuấn mạnh dạn rủ crush đi Aeon chơi và bất ngờ thay, cô ấy đồng ý! 
 
-## Tính toán năm
+Tuấn vui sướng đến sớm, đứng ngay trước cửa CGV từ ngày $d$, tháng $m$, năm $y$ và bắt đầu đếm từng giây chờ người thương đến.
 
-Độ dài trung bình của một năm chí tuyến được đo lường <b>$\approx$365.2422 ngày</b>. Nhiều các loại lịch khác như lịch Julius (trước 10/1582) đã cố gắng đơn giản hóa việc xử lý phần lẻ bằng cách làm tròn thành 365.25 ngày theo quy tắc "năm nào chia hết cho 4 thì có năm nhuận".
+Nhưng một tiếng... rồi một ngày... rồi một tuần...
+Cô ấy vẫn chưa tới.
+Tuấn vẫn kiên nhẫn, mỗi ngày đánh dấu thêm một gạch trên tường.....
 
-Tuy nhiên, điều này sẽ dẫn đến sai số $\approx$0,0078 ngày (0,25 − 0,2422 = 0,0078).
-- 1 năm dư 0,0078 ngày
-- 100 năm dư 0,78 ngày
-- 128 năm dư $\approx$1 ngày
+#### <b>Nhiệm vụ</b>
+Sau $x$ ngày chờ đợi (vẫn chưa thấy bóng dáng cô ấy đâu), hãy <b>xác định ngày Tuấn nhận ra sự thật phũ phàng</b> — tức là ngày thứ $x$ kể từ khi bắt đầu đợi.
 
-$\Rightarrow$ Nghĩa là sau 128 năm, lịch sẽ lệch $\approx$1 ngày so với chu kỳ thiên văn thực.
+#### <b>Input</b>
+ - Một dòng gồm bốn số nguyên $x, d, m, y$.
+ - Trong đó: 
+ + $x$ — số ngày Tuấn đã chờ ở Aeon ( $0 < x \le 10^{18}$ ) 
+ + $d, m, y$ — ngày, tháng, năm Tuấn bắt đầu chờ. ( $0 < y \le 10^{6}$ ) 
+
+#### <b>Output</b>
+ - In ra <b>thứ, ngày, tháng, năm</b> hiện tại, tức là <b>ngày Tuấn kết thúc $x$ ngày chờ đợi</b> (và có lẽ… quay về nhà :c).
+
+#### <b>Ghi chú</b>
+- Thứ được in ra bằng tiếng Anh, viết hoa chữ cái đầu: <i>Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday</i>
+- Ngày tháng năm ngăn được cách bởi dấu '/'
+- Sử dụng lịch quốc tế <b>(lịch Gregorius)</b>.
+
+#### <b>Subtasks</b>
+
+| Subtask                      | Giới hạn                       | Điểm |
+| :--------------------------- | :----------------------------- | :--- |
+| 1                            | $x \le 10^3$, $y \le 2025$     |  10  |
+| 2                            | $x \le 10^9$, $y \le 2026$     |  30  |
+| 3                            | $x \le 10^{18}$, $y \le 10^6$  |  60  |
+
+## Ý tưởng
+
+#### Subtask 1
+Ta có thể dễ dàng AC subtask 1 thông qua vòng lặp cơ bản và xử lý trường hợp năm nhuận với độ phức tạp tổng thể là $O(x)$.
+
+#### Subtask 2
+Nhận thấy $x$ có thể lên tới $10^9$ nên việc giải bằng vòng lặp hoàn toàn <b>gãy cánh</b>. Ta cần công thức hóa bằng cách chuyển ngày tháng năm thành một số nguyên đại diện cho <b>số ngày trôi qua ngày kể từ mốc $1/1/1$ kết hợp với ánh xạ</b>. Kết quả là bài toán có thể được tối ưu xuống độ phức tạp $O(logx)$
+
+#### Subtask 3
+Với $x = 10^{18}$ thì chắc chắn ta cần phải tìm được một giải pháp chạy trong $O(1)$ thông qua việc tối ưu rất rất nhiều. Mà để đạt được độ phức tạp tưởng như không thể này thì ta cần phải tìm ra <b>tính chất đặc biệt nằm trong lịch Gregorius</b>, và đây chính là nội dung của bài blog ngày hôm nay.
+
+## Tổng quát về lịch thế giới
+Độ dài trung bình của một năm chí tuyến được đo lường <b>$\approx$365.2422 ngày</b>. Nhiều các loại lịch khác như [lịch Julius](https://vi.wikipedia.org/wiki/L%E1%BB%8Bch_Julius){:target="_blank"} (trước 10/1582) đã cố gắng đơn giản hóa việc xử lý phần lẻ bằng cách làm tròn thành 365.25 ngày theo quy tắc:
+
+ - <b>"năm nào chia hết cho 4 thì có năm nhuận".</b>
+
+Tuy nhiên, việc làm tròn này tạo ra <b>sai số $\approx$0,0078 ngày/năm</b> so với độ dài năm chí tuyến, tương đương khoảng 1 ngày lệch sau mỗi 128 năm.
+
+$\Rightarrow$ Điều đó có nghĩa là theo thời gian, ngày xuân phân và hạ chí dần trôi khỏi mốc thiên văn thực tế, dẫn đến một số mùa màng “đến sớm” hơn lịch ghi nhận.
 
 #### Lịch Gregorius (10/1582)
-Nhằm khắc phục việc bị “dư” 0,0078 ngày mỗi năm, Giáo hoàng Gregory XIII đã ban hành lịch Gregory vào tháng 10 năm 1582 với hai quy tắc chính:
-- <b> Năm chia hết cho 4 nhưng không chia hết cho 100. </b>
-- <b> Hoặc năm chia hết cho 400 (mặc dù chúng chia hết cho 100.) </b>
+Nhằm khắc phục việc bị dư 0,0078 ngày mỗi năm, <b>Giáo hoàng Gregory XIII</b> đã ban hành lịch Gregorius vào tháng 10 năm 1582 với quy tắc như sau:
+- <b> Năm chia hết cho 4 là năm nhuận.</b>
+- <b> Năm chia hết cho 100 không là năm nhuận. </b>
+- <b> Năm chia hết cho 400 là năm nhuận.</b>
 
-Qua đó, độ dài một năm theo lịch Gregorius quy ước <b>365.2425 ngày</b>, tức là lớn hơn chu kỳ thiên văn thực khoảng $3\over10000$ (365.2425 − 365.2422 = 0.0003), nhưng vẫn đủ chính xác để sử dụng ổn định trong nhiều thiên niên kỷ tới. 
+Qua đó, độ dài một năm theo lịch Gregorius quy ước <b>365.2425 ngày</b>, tức là lớn hơn độ dài trung bình của một năm chí tuyến <b>$\approx 0,0003$ ngày/năm</b>. Tức xấp xỉ chỉ 26 giây mỗi năm và tương đương 1 ngày sau khoảng 3300 năm.
 
-<b>Năm lịch Gregorius 365.2425 có thể được viết lại như sau:</b>
+## Tính toán số ngày trôi qua kể từ 1/1/1
 
-$$ 365.0000 + 0.2500 - 0.0100 + 0.0025 $$
+#### Tính chất đặc biệt của Lịch Gregorious
 
-Hay:
+<b>Ta thực hiện phép biến đổi như sau:</b>
 
-$$ 365 + \frac{1}{4} - \frac{1}{100} + \frac{1}{400} $$
+$$
+\begin{align*}
+365.2425 
+&\Longleftrightarrow 365.0000 + 0.2500 - 0.0100 + 0.0025 \\
+&\Longleftrightarrow 365 + \frac{1}{4} - \frac{1}{100} + \frac{1}{400}
+\end{align*}
 
-<b>Số ngày trong y năm là:</b>
+$$
+
+<b>Tham số hóa nó thì ta có số ngày trong y năm là:</b>
 
 $$
 \begin{equation}
-    365y + \frac{y}{4} - \frac{y}{100} + \frac{y}{400}
+    D(y) = 365y + \frac{y}{4} - \frac{y}{100} + \frac{y}{400}
     \label{eq:dayeq1}
 \end{equation}
 $$
 
-<b>Nếu ta rút gọn thành hàm rời rạc[^hamroirac], ta có:</b>
+(Với $D(y)$ là hàm đếm số ngày trôi qua kể từ $1/1/1$ và y là số năm đã qua)
+
+<b>Nếu xét trong không gian rời rạc</b>, tức là chỉ đếm số ngày thực tế, ta được hàm tương ứng:
 
 $$
 \begin{equation}
-    D(y) = 365y + \lfloor\frac{y}{4}\rfloor - \lfloor\frac{y}{100}\rfloor + \lfloor\frac{y}{400}\rfloor
+    \tilde{D}(y) = 365y + \lfloor\frac{y}{4}\rfloor - \lfloor\frac{y}{100}\rfloor + \lfloor\frac{y}{400}\rfloor
     \label{eq:dayeq2}
 \end{equation}
 $$
 
-Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7){:target="_blank"}
+(Với $\tilde{D}(y)$ là hàm rời rạc của $D(y)$)
 
-Hàm rời rạc[^hamroirac] này là nguồn gốc của quy tắc năm nhuận trong lịch Gregorius. Hàm \eqref{eq:dayeq2} xấp xỉ rất gần với hàm thực \eqref{eq:dayeq1}, và dấu "$=$" xảy ra khi y chia hết 400. Trong khoảng 400 năm này, sai số lớn nhất là 1.4775 ngày vào năm 303 của chu kỳ, và −0.72 ngày vào năm 96 của chu kỳ. Do sai số này, việc tìm năm khi biết số ngày (hàm ngược) không hoàn toàn chính xác, nhưng ta có thể tìm một xấp xỉ rất gần. 
+<b>Qua công thức trên thì ta có nhận xét như sau:</b> Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7){:target="_blank"}
 
-<b>Cho trước d ngày, số năm y có thể xấp xỉ bằng:</b>
+$\Rightarrow$ Nhờ đó, ta nhận thấy <b>lịch Gregorius lặp lại chính xác sau mỗi 400 năm và tuần hoàn theo chu kỳ này.</b> Nên ta chỉ cần xét và tối ưu trong khung 400 năm đầu tiên là đủ.  
+
+#### Vấn đề sai số
+
+Vì hàm $\tilde{D}(y)$ nằm trong không gian rời rạc nên <b>chắc chắn</b> sẽ có sai số so với hàm gốc (vì hàm này luôn trả về giá trị nguyên với $\forall y \in \mathbb{R}$).
+
+Sai số này được biểu diễn bằng hàm sau:
+
+$$
+\varepsilon(y) = \tilde{D}(y) - D(y), \quad \forall\, y \in [1, 400]
+$$
+
+Ta có nhận xét như sau: 
+
+$$
+\begin{align}
+    &\textbf{(1)} \quad \varepsilon(y) = 0, 
+        &&\text{khi } y \mid 400. 
+        \label{eq:error_zero} \\[6pt]
+    &\textbf{(2)} \quad \varepsilon_{\max} = 1.4775, 
+        &&\forall\, y \in [1,400].
+        \label{eq:error_max} \\[6pt]
+    &\textbf{(3)} \quad \varepsilon_{\min} = -0.72, 
+        &&\forall\, y \in [1,400].
+        \label{eq:error_min}
+\end{align}
+
+$$
+
+
+Do tồn tại sai số này, việc tìm năm sau khi biết tổng số ngày kể từ 1/1/1 <b>rất khó khăn và không thể chính xác tuyệt đối</b>, dù vẫn cho xấp xỉ cực kỳ gần với thực tế.
+
+## Tính toán năm từ tổng số ngày trôi qua
+
+Cho $d$ là số ngày trôi qua kể từ 1/1/1, ta có thể tính số năm y dựa vào công thức sau:
 
 $$
 \begin{equation}
-    y_{approx} = \frac{d}{365.2425}
+    y \approx \frac{d}{365.2425}
     \label{eq:approxy}
 \end{equation}
 $$
 
-> Điều này sẽ đúng cho hầu hết các ngày, <b>NGOẠI TRỪ</b> những trường hợp mà d nằm trong khoảng sai số so với ranh giới của một năm. <b>Ví dụ với một trường hợp dưới đây:</b>
-{: .prompt-danger }
-<!-- markdownlint-restore -->
+Công thức trên đúng với độ chính xác cao trong hầu hết các trường hợp, ngoại trừ khi $d$ nằm gần mốc chuyển giao năm (tức là khi $d$ xấp xỉ một giá trị $\tilde{D}(y)$  nào đó — tổng số ngày tính đến hết năm thứ $y$). Tại những mốc này, sai số do sự xuất hiện hoặc biến mất của ngày nhuận trở nên rõ rệt, khiến phép chia xấp xỉ \eqref{eq:approxy} không còn chính xác.
 
-Giả sử ta có $d = 36524$ ngày và muốn tìm y sao cho $y_{approx} \approx d$.
+<b>Ví dụ:</b>
+Giả sử ta có $d = 36524$ ngày và muốn tìm năm $y$ tương ứng.
 
 $$
-y_{approx} = \frac{d}{365.2425} = \frac{36524}{365.2425} \approx 99.9993.
+y \approx \frac{36524}{365.2425} \approx 99.9993.
 $$
 
-Nếu lấy phần nguyên, ta sẽ cho rằng $y = 99$ năm. Nhưng thực tế, $100$ năm lịch Gregorius mới chính xác là 36524 ngày (do năm thế kỷ không phải năm nhuận). 
+Nếu lấy phần nguyên thì ta sẽ cho rằng $y = 99$ năm, ta kiểm tra lại như sau:
 
 $$
 
 \begin{align}
 
-D(100) &= 365*100 + \lfloor\frac{100}{4}\rfloor - \lfloor\frac{100}{100}\rfloor + \lfloor\frac{100}{400}\rfloor \nonumber\\&= 36500 + 25 - 1 + 0 \nonumber\\&= 36524 \nonumber
+D(99) &= 365*99 + \lfloor\frac{99}{4}\rfloor - \lfloor\frac{99}{100}\rfloor + \lfloor\frac{99}{400}\rfloor \nonumber\\&= 36135 + 24 - 0 + 0 \nonumber\\&= 36159 \neq 36524 \nonumber
 
 \end{align}
 
 $$
 
+$\Rightarrow$ Thực tế, $100$ năm lịch Gregorius mới chính xác là 36524 ngày (do năm thế kỷ không phải năm nhuận). 
+
 Đây chính là trường hợp d nằm trong khoảng sai số so với ranh giới của năm thứ 100, nếu dùng công thức \eqref{eq:approxy} để “đảo ngược” ngày thành năm, ta sẽ thu được kết quả sai lệch một năm.
 
-#### Cách khắc phục
+#### Cách khắc phục sai số từ ngày
 
-Để khắc phục sai lệch trên, đầu tiên ta đưa công thức \eqref{eq:approxy} về dạng <b>tính toán với số nguyên để tránh sai số do tính toán với số dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic){:target="_blank"}):
-
-$$
-y_{approx} = \frac{d}{365.2425} = \frac{d * 10000}{365.2425 * 10000} = \frac{10000d}{3652425}
-$$
-
-Tuy nhiên, công thức trên vẫn cho ra kết quả sai lệch nên ta phải bù vào một hằng số $C$ (offset) để chắc chắn không bị trượt sai một đơn vị khi rời rạc hóa. Một lựa chọn quan trọng cho $C$ là sử dụng $C_{max}$. Việc đặt $C = C_{max}$ mang lại một ưu điểm quan trọng $\Rightarrow$ <b>Nó đảm bảo rằng $y_{approx}$ sẽ không bao giờ nhỏ hơn $y$ ($y_{approx} \geq y$).</b> Cụ thể, $y_{approx}$ = $[y, y + 1]$. Nhờ vậy, ta có thể đảm bảo năm chính xác.
-
-Đâu tiên ta tìm độ sai lệch lớn nhất giữa $10000D(y)$ và $y(3652425)$ trên một chu kỳ 400 năm (vì cứ 400 năm sai số tái lặp):
+Để khắc phục sai lệch nói trên, ta đưa công thức \eqref{eq:approxy} về dạng tính toán hoàn toàn bằng số nguyên, nhằm tránh sai số khi thao tác với <b>số dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic){:target="_blank"}):
 
 $$
-
-\Delta(y) = y(3652425) - 10000D(y).
-
+y \approx \frac{d}{365.2425} \Rightarrow y = \frac{d * 10000}{365.2425 * 10000} = \frac{10000d}{3652425}
 $$
 
+Tuy nhiên, công thức trên vẫn có thể sai lệch do đặc tính rời rạc của hàm $\tilde{D}(y)$ như ta đã nói ở $\eqref{eq:error_max}$. Để đảm bảo kết quả không bị “trượt” sai một đơn vị năm, ta thêm vào một hằng số bù $C$ (offset).
+
+Một lựa chọn an toàn là 
+
+$$
+C = \varepsilon_{\max} * 10000 = 14775
 $$
 
-\Rightarrow C_{max} = \max\limits_{0\leq y < 400}(\Delta(y)) = 14775 \text{ (Khi y = 303)}
+Cách đặt này mang lại một ưu điểm quan trọng đó là nó đảm bảo:
 
+$$
+\begin{aligned}
+    y_{\text{xấp xỉ}} &\geq y_{\text{thực tế}}, \\[4pt]
+    \text{tức là:} \quad 
+    y_{\text{xấp xỉ}} &\in [\,y_{\text{thực tế}},\, y_{\text{thực tế}} + 1\,]
+\end{aligned}
 $$
 
 Vậy công thức chuyển ngày thành năm của chúng ta trở thành:
@@ -143,9 +230,11 @@ $$
 \end{equation}
 $$
 
-## Tính toán tháng
+## Tính toán tháng từ tổng số ngày trôi qua
 
-Vì độ dài các tháng không giống nhau, đặc biệt là vì độ dài của <b>tháng 2 không cố định</b>, ban đầu việc tính toán hệ số ngày trong một năm rất bất khả thi nếu không tra bảng và kiểm tra các năm nhuận. Tuy nhiên, ta có thể dễ dàng vượt qua vấn đề này bằng cách <b>định nghĩa đầu năm của lịch là tháng 3</b>. 
+Vì độ dài các tháng <b>không đồng nhất</b>, đặc biệt là <b>tháng 2 có độ dài thay đổi tùy theo năm nhuận</b>, nên việc xác định số ngày kể từ đầu năm trở nên phức tạp nếu chỉ dựa vào bảng tra thông thường.
+
+Để khắc phục điều này, ta <b>định nghĩa lại điểm bắt đầu của năm là ngày 1 tháng 3 của năm 0 (thay vì ngày 1 tháng 1)</b>, sao cho tháng 1 và tháng 2 của năm kế tiếp được xem như phần cuối của năm hiện tại.
 
 | Chỉ số tháng (month_index)       | Tháng         | Số ngày trong tháng   | Vị trí ngày (day_index)    |
 | :--------             | :--------     | :-------------        | :-------------    |
@@ -162,30 +251,33 @@ Vì độ dài các tháng không giống nhau, đặc biệt là vì độ dài
 |         10            |       1       | 31                    | 306               |
 |         11            |       2       | 28 hoặc 29            | 337               |
 
-> Nếu năm nhuận thì số ngày tháng 2 là 29, tức tháng 2 lúc đó lệch +1, nhưng không làm thay đổi offset các tháng trước vì kết thúc ở $\text{month_index} = 11$.
+> Việc đánh số tháng bắt đầu từ tháng 3 mang lại một ưu điểm nổi bật đó là <b>ngày nhuận luôn được thêm vào cuối năm (month_index=11)</b>, nhờ đó, vị trí bắt đầu của các tháng còn lại không bị thay đổi giữa năm thường và năm nhuận.
 {: .prompt-info }
 
-Việc đánh số tháng theo cách này có ưu điểm đặc biệt là <b>ngày nhuận luôn được thêm vào cuối năm ($\text{month_index} = 11$)</b>, và không làm thay đổi hệ số ngày của đầu các tháng trong năm. Bằng cách sử dụng hồi quy tuyến tính cơ bản trên <b>chỉ số tháng ($\text{month_index}$)</b> và <b>vị trí ngày ($\text{day_index}$)</b>, ta có thể tìm các hàm để ánh xạ lẫn nhau. 
+$\Rightarrow$ Nhờ đặc tính này, ta có thể ánh xạ giữa chỉ số tháng và vị trí ngày mà không cần phải lo đến việc xử lý ngoại lệ riêng cho năm nhuận.
 
-Ta có tổng số ngày của 10 tháng (từ tháng 3 đến tháng 12) là 306 ngày. Nên sau mỗi 10 bước $\text{month_index}$ (từ 0 đến 9), ta đã dịch chuyển đúng 306 ngày. <b>Nói cách khác, “trung bình” cứ mỗi bước tăng $\text{month_index}$ thì số ngày dời đi khoảng $\frac{306}{10} = 30.6$ ngày.</b>
+Ta có tổng số ngày từ tháng 3 đến tháng 12 là <b>306 ngày</b>. Tức cứ sau mỗi 10 bước, ta đã dịch chuyển đúng 306 ngày. <b>Nói cách khác, “trung bình” cứ mỗi 1 bước tăng $\text{month_index}$ thì số ngày dời đi khoảng $\frac{306}{10}$ ngày.</b>
 
-Ta muốn công thức cho kết quả nguyên chính xác bằng “tổng số ngày đã trôi qua kể từ đầu tháng 3 của năm đó” khi $\text{month_index}$ là một số nguyên 0, 1, 2, … Cho ví dụ:
+Ta muốn một công thức nào đó có thể cho kết quả nguyên chính xác bằng “tổng số ngày đã trôi qua kể từ đầu tháng 3 của năm đó” khi $\text{month_index}$ là một số nguyên 0, 1, 2, … Cụ thể
 - Với $\text{month_index} = 0$ (tháng 3) $\Rightarrow \text{day_index} = 0$
 - Với $\text{month_index} = 1$ (tháng 4) $\Rightarrow \text{day_index} = 31$
 - Với $\text{month_index} = 2$ (tháng 5) $\Rightarrow \text{day_index} = 61$
 - ...
 - Với $\text{month_index} = 10$ (tháng 1) $\Rightarrow \text{day_index} = 306$
 
-Nếu ta chỉ dùng thẳng công thức "$30.6 * \text{month_index}$" rồi làm tròn xuống $\lfloor30.6 * \text{month_index}\rfloor$, thì sẽ bị lệch 1 ngày do phần thập phân. Để khắc phục, cần biểu diễn "$30.6 * \text{month_index}$" dưới dạng phân số có mẫu 10 rồi cộng một hằng số $C = 5$ bù để khi làm tròn luôn ra số nguyên gần nhất đảm bảo đúng kết quả.
-
 Qua đó, ta có thể tính số ngày kể từ đầu năm <b>(ngày 1 tháng 3 được coi là ngày 0)</b> của ngày mùng 1 của tháng đó bằng phần nguyên của hàm:
 
 $$
 \begin{equation}
-    \text{day_index} = \text{getDayIndex}(\text{month_index}) = \lfloor\frac{306*\text{month_index} + 5}{10}\rfloor
+    \begin{aligned}
+        \text{day_index} &= \text{round}\!\left(\frac{306 \times \text{month_index}}{10}\right) \\
+                          &= \left\lfloor \frac{306 \times \text{month_index} + 5}{10} \right\rfloor
+                          
+    \end{aligned}
     \label{eq:getdayindex}
 \end{equation}
 $$
+
 
 <b>Ngược lại</b>, cho trước hệ số ngày day_index tính từ đầu năm (bắt đầu từ month_index = 0), ta muốn tìm chỉ số tháng month_index, ta có:
 
@@ -205,15 +297,15 @@ Vì $\text{month_index}$ là số nguyên (từ 0 đến 11), điều này cho t
 
 $$
 \begin{equation}
-    \text{month_index} = \text{getMonthIndex}(\text{day_index})= \lfloor\frac{10*\text{day_index} + 5}{306}\rfloor
+    \text{month_index} = \lfloor\frac{10*\text{day_index} + 5}{306}\rfloor
     \label{eq:getmonthindex}
 \end{equation}
 $$
 
-> Lưu ý: Tháng 1 và tháng 2 ($\text{month_index} = 10$ và $\text{month_index} = 11$) sẽ được xem như là <b>năm trước</b> theo thuật toán
+> Tháng 1 và tháng 2 ($\text{month_index} = 10$ và $\text{month_index} = 11$) sẽ được xem như là <b>năm trước</b> theo thuật toán
 {: .prompt-warning }
 
-> Lưu ý: Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/){:target="_blank"}).
+> Trong lịch Gregorius, ngày 1 tháng 3 của năm 0 thực chất rơi vào thứ Tư ([Zeller’s Congruence](https://www.geeksforgeeks.org/zellers-congruence-find-day-date/){:target="_blank"}).
 {: .prompt-warning }
 
 ## Mã giải (C++)
@@ -339,7 +431,7 @@ gdate lich(d, m, y);
 cout << day[(toDays(lich)) % 7]; // ngày 1 tháng 3 năm 0 là thứ 4
 ```
 
-> Tips xử lý DDMMYYYY :3
+> Tips xử lý DDMMYYYY
 {: .prompt-tip }
 ```c++
 // xuất nhanh DDMMYYYY 
@@ -381,6 +473,3 @@ string s = buf;
 ## Nguồn tham khảo
 - [Gary Katch, “GDate method" (Archived)](https://web.archive.org/web/20161203020157/http://alcor.concordia.ca/~gpkatch/gdate-method.html){:target="_blank"}
 - [Gary Katch, “GDate algorithm" (Archived)](https://web.archive.org/web/20170507133619/https://alcor.concordia.ca/~gpkatch/gdate-algorithm.html){:target="_blank"}
-
-#### Ghi chú
-[^hamroirac]: Hàm rời rạc: Hàm lấy phần nguyên và bỏ qua phần dư
