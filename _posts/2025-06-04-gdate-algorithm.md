@@ -314,12 +314,12 @@ $$
 
 ```c++
 #define ll long long
-struct gdate {
+struct date {
     ll d, m, y; // Lưu ngày, tháng, năm
-    gdate() : d(0), m(0), y(0) {} 
-    gdate(ll a, ll b, ll c) : d(a), m(b), y(c) {} // Constructor
+    date() : d(0), m(0), y(0) {} 
+    date(ll a, ll b, ll c) : d(a), m(b), y(c) {} // Constructor
 
-    friend ostream& operator << (ostream& out, const gdate& x) { // in nhanh
+    friend ostream& operator << (ostream& out, const date& x) { // in nhanh
         return out << x.d << ' ' << x.m << ' ' << x.y;
     }
 };
@@ -380,8 +380,8 @@ date toDate(ll D) {
 {: .prompt-info }
 
 ```c++
-gdate lich1(d1, m1, y1);
-gdate lich2(d2, m2, y2);
+date lich1(d1, m1, y1);
+date lich2(d2, m2, y2);
 cout << abs(toDays(lich1) - toDays(lich2));
 ```
 
@@ -389,7 +389,7 @@ cout << abs(toDays(lich1) - toDays(lich2));
 {: .prompt-info }
 
 ```c++
-gdate lich(d, m, y);
+date lich(d, m, y);
 cout << toDate(toDays(lich) + x); // toDate(toDays(lich) - x);
 ```
 
@@ -397,8 +397,8 @@ cout << toDate(toDays(lich) + x); // toDate(toDays(lich) - x);
 {: .prompt-info }
 
 ```c++
-gdate lich(d, m, y);
-gdate check = toDate(toDays(lich));
+date lich(d, m, y);
+date check = toDate(toDays(lich));
 cout << ((d == check.d && m == check.m && y == check.y) ? "ok" : "no");
 ```
 
@@ -406,8 +406,8 @@ cout << ((d == check.d && m == check.m && y == check.y) ? "ok" : "no");
 {: .prompt-info }
 
 ```c++
-string day[7] = { "wednesday", "thursday", "friday", "saturday", "sunday", "monday", "tuesday" };
-gdate lich(d, m, y);
+string day[7] = { "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday", "Tuesday" };
+date lich(d, m, y);
 cout << day[(toDays(lich)) % 7]; // ngày 1 tháng 3 năm 0 là thứ 4
 ```
 
