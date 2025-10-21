@@ -228,6 +228,8 @@ $$
 \end{equation}
 $$
 
+<b>Tuy nhiên, vì $\tilde{y} > y$ nên khi ta tìm lại năm thực tế thì cần phải có bước lùi năm. Điều này có thể thực hiện dễ dàng thông qua việc so sánh với hàm Gregorian (vì hàm này không có sai số).</b>
+
 ## Tính toán tháng từ tổng số ngày trôi qua
 
 Vì độ dài các tháng <b>không đồng nhất</b>, đặc biệt là <b>tháng 2 có độ dài thay đổi tùy theo năm nhuận</b>, nên việc xác định số ngày kể từ đầu năm trở nên phức tạp nếu chỉ dựa vào bảng tra thông thường.
@@ -324,11 +326,11 @@ struct date {
     }
 };
 
-ll gregorius(ll y) {
+ll gregorian(ll y) {
     return y * 365 + y / 4 - y / 100 + y / 400; // (1)
 }
 
-ll reversedGregorius(ll D) {
+ll reversedGregorian(ll D) {
     return (10000 * D + 14775) / 3652425; // (6)
 }
 
@@ -352,17 +354,17 @@ ll toDays(date x) {
     // Tổng số ngày = số ngày kể từ 1/1/0 đến 1/1/adjusted_y
     //               + số ngày kể từ tháng 3 đến month_index
     //               + số ngày trong tháng hiện tại - 1 (vì ngày đầu tiên trong tháng là 1 nhưng trong tính toán là 0)
-    return gregorius(adjusted_y) + getDayIndex(month_index) + (x.d - 1);
+    return gregorian(adjusted_y) + getDayIndex(month_index) + (x.d - 1);
     
 }
 
 // Chuyển đổi tổng số ngày từ 1/1/0 đến 1/1/y sang lịch
 date toDate(ll D) {
-    ll yyyy = reversedGregorius(D);
-    ll day_index = D - gregorius(yyyy);
+    ll yyyy = reversedGregorian(D);
+    ll day_index = D - gregorian(yyyy);
 
     // Nếu day_index < 0, tức là chúng ta đang ở năm trước, cần giảm y đi 1 và tính lại day_index.
-    if(day_index < 0) yyyy--, day_index = D - gregorius(yyyy);
+    if(day_index < 0) yyyy--, day_index = D - gregorian(yyyy);
 
     int month_index = getMonthIndex(day_index);
     int mm = (month_index + 2) % 12 + 1;
