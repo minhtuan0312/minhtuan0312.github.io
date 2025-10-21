@@ -83,7 +83,7 @@ Sau $x$ ngày chờ đợi (vẫn chưa thấy bóng dáng cô ấy đâu), hãy
 ## Tổng quát về lịch thế giới
 Độ dài trung bình của một năm chí tuyến được đo lường <b>$\approx$365.2422 ngày</b>. Nhiều các loại lịch khác như [lịch Julius](https://vi.wikipedia.org/wiki/L%E1%BB%8Bch_Julius){:target="_blank"} (trước 10/1582) đã cố gắng đơn giản hóa việc xử lý phần lẻ bằng cách làm tròn thành 365.25 ngày theo quy tắc:
 
- - <b>"năm nào chia hết cho 4 thì có năm nhuận".</b>
+ - <b>năm nào chia hết cho 4 thì có năm nhuận.</b>
 
 Tuy nhiên, việc làm tròn này tạo ra <b>sai số $\approx$0,0078 ngày/năm</b> so với độ dài năm chí tuyến, tương đương khoảng 1 ngày lệch sau mỗi 128 năm.
 
@@ -328,7 +328,7 @@ ll gregorius(ll y) {
     return y * 365 + y / 4 - y / 100 + y / 400; // (1)
 }
 
-ll reversed_gregorius(ll D) {
+ll reversedGregorius(ll D) {
     return (10000 * D + 14775) / 3652425; // (6)
 }
 
@@ -358,7 +358,7 @@ ll toDays(date x) {
 
 // Chuyển đổi tổng số ngày từ 1/1/0 đến 1/1/y sang lịch
 date toDate(ll D) {
-    ll yyyy = reversed_gregorius(D);
+    ll yyyy = reversedGregorius(D);
     ll day_index = D - gregorius(yyyy);
 
     // Nếu day_index < 0, tức là chúng ta đang ở năm trước, cần giảm y đi 1 và tính lại day_index.
