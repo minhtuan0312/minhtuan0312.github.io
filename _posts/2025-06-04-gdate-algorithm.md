@@ -133,7 +133,7 @@ $$
 
 <b>Qua công thức trên thì ta có nhận xét như sau:</b> Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7){:target="_blank"} <b>
 
-$\Rightarrow$ Nhờ đó, ta nhận thấy <b>lịch Gregorian lặp lại chính xác sau mỗi 400 năm và tuần hoàn theo chu kỳ này.</b> Nên ta chỉ cần xét và tối ưu trong khung 400 năm đầu tiên là đủ.</b>  
+$\Rightarrow$ Nhờ đó, ta nhận thấy <b>lịch Gregorian lặp lại chính xác sau mỗi 400 năm và tuần hoàn theo chu kỳ này.</b> Nên ta chỉ cần xét và tối ưu trong khung 400 năm đầu tiên là đủ.
 
 #### Vấn đề sai số
 
