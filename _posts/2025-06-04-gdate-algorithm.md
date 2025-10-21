@@ -219,7 +219,7 @@ Vậy công thức chuyển ngày thành năm của chúng ta trở thành:
 
 $$
 \begin{equation}
-    \tilde{y} = \lfloor \frac{(d + 1.4775) * 10000}{3652425} \rfloor = \lfloor \frac{d * 10000 + 14775}{3652425} \rfloor
+    \tilde{y} = \lfloor \frac{(D + 1.4775) * 10000}{3652425} \rfloor = \lfloor \frac{D * 10000 + 14775}{3652425} \rfloor
     \label{eq:yearsfromdays}
 \end{equation}
 $$
