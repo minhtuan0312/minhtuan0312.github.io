@@ -142,7 +142,7 @@ Vì hàm $\tilde{D}(y)$ nằm trong không gian rời rạc nên <b>chắc chắ
 Sai số này được biểu diễn bằng hàm sau:
 
 $$
-\varepsilon(y) = D(y) - \tilde{D}(y), \quad \forall\, y \in [1, 400]
+\varepsilon(y) = D(y) - \tilde{D}(y), \quad \forall\, y \in [0, 400]
 $$
 
 Ta có nhận xét như sau: 
