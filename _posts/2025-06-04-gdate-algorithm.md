@@ -124,7 +124,7 @@ $$
 
 $$
 \begin{equation}
-    \tilde{D}(y) = 365\lfloor y\rfloor + \lfloor\frac{\lfloor y\rfloor}{4}\rfloor - \lfloor\frac{\lfloor y\rfloor}{100}\rfloor + \lfloor\frac{\lfloor y\rfloor}{400}\rfloor
+    \tilde{D}(y) = \lfloor 365y\rfloor + \lfloor\frac{y}{4}\rfloor - \lfloor\frac{y}{100}\rfloor + \lfloor\frac{y}{400}\rfloor
     \label{eq:dayeq1}
 \end{equation}
 $$
@@ -142,7 +142,7 @@ Vì hàm $\tilde{D}(y)$ nằm trong không gian rời rạc nên <b>chắc chắ
 Sai số này được biểu diễn bằng hàm sau:
 
 $$
-\varepsilon(y) = \tilde{D}(y) - D(y), \quad \forall\, y \in [1, 400]
+\varepsilon(y) = D(y) - \tilde{D}(y), \quad \forall\, y \in [1, 400]
 $$
 
 Ta có nhận xét như sau: 
@@ -153,10 +153,10 @@ $$
         &&\text{khi } y \mid 400. 
         \label{eq:error_zero} \\[6pt]
     &\textbf{(2)} \quad \varepsilon_{\max} = 1.4775, 
-        &&\forall\, y \in [1,400].
+        &&y = 303.
         \label{eq:error_max} \\[6pt]
     &\textbf{(3)} \quad \varepsilon_{\min} = -0.72, 
-        &&\forall\, y \in [1,400].
+        &&y = 96.
         \label{eq:error_min}
 \end{align}
 
@@ -171,7 +171,7 @@ Cho $D$ là số ngày trôi qua kể từ 1/1/0, ta có thể tính số năm y
 
 $$
 \begin{equation}
-    y \approx \frac{D}{365.2425} \quad \Rightarrow \quad \tilde{y} = \lfloor \frac{\lfloor D\rfloor}{365.2425} \rfloor
+    y \approx \frac{D}{365.2425} \quad \Rightarrow \quad \tilde{y} = \lfloor \frac{D}{365.2425} \rfloor
     \label{eq:approxy}
 \end{equation}
 $$
@@ -182,7 +182,7 @@ Công thức trên đúng với độ chính xác cao trong hầu hết các tr�
 Giả sử ta có $d = 36524$ ngày và muốn tìm năm $y$ tương ứng.
 
 $$
-\tilde{y} = \lfloor \frac{\lfloor 36524\rfloor}{365.2425} \rfloor = 99.
+\tilde{y} = \lfloor \frac{36524}{365.2425} \rfloor = 99.
 $$
 
 Nếu lấy phần nguyên thì ta sẽ cho rằng $y = 99$ năm, ta kiểm tra lại như sau:
@@ -191,7 +191,7 @@ $$
 
 \begin{align}
 
-\tilde{D}(99) &= 365*\lfloor 99\rfloor + \lfloor\frac{\lfloor 99\rfloor}{4}\rfloor - \lfloor\frac{\lfloor 99\rfloor}{100}\rfloor + \lfloor\frac{\lfloor 99\rfloor}{400}\rfloor \nonumber\\&= 36135 + 24 - 0 + 0 \nonumber\\&= 36159 \neq 36524 \nonumber
+\tilde{D}(99) &= \lfloor 365*99\rfloor + \lfloor\frac{99}{4}\rfloor - \lfloor\frac{ 99}{100}\rfloor + \lfloor\frac{99}{400}\rfloor \nonumber\\&= 36135 + 24 - 0 + 0 \nonumber\\&= 36159 \neq 36524 \nonumber
 
 \end{align}
 
@@ -206,7 +206,7 @@ $\Rightarrow$ Thực tế, $100$ năm lịch Gregorian mới chính xác là 365
 Vì làm việc trong C++ nên trước hết cần phải đưa công thức \eqref{eq:approxy} về dạng tính toán hoàn toàn bằng số nguyên, nhằm tránh sai số khi thao tác với <b>dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic){:target="_blank"}):
 
 $$
-\tilde{y} = \lfloor \frac{\lfloor D\rfloor}{365.2425} \rfloor \le \frac{D}{365.2425} \quad \Rightarrow \quad \tilde{y} = \lfloor \frac{\lfloor D\rfloor * 10000}{3652425} \rfloor \le \frac{D * 10000}{3652425}
+\tilde{y} = \lfloor \frac{D}{365.2425} \rfloor \le \frac{D}{365.2425} \quad \Rightarrow \quad \tilde{y} = \lfloor \frac{D * 10000}{3652425} \rfloor \le \frac{D * 10000}{3652425}
 $$
 
 Nhận thấy thường khi bị lệch $1$ năm thì y thực của chúng ta sẽ ở dạng $\tilde{y} = k + 0.999$... Để né hiện tượng này thì ta cần bù thêm một hằng số $C$ sao cho $\tilde{y} \geq \frac{D * 10000}{3652425}$, mục đích là để khi floor thì giá trị bằng $y$ hoặc $y + 1$. Lựa chọn chính xác và an toàn nhất đó là sử dụng sai số cực đại mà ta tìm thấy ở $\eqref{eq:error_max}$
@@ -219,7 +219,7 @@ Vậy công thức chuyển ngày thành năm của chúng ta trở thành:
 
 $$
 \begin{equation}
-    \tilde{y} = \lfloor \frac{(\lfloor d\rfloor + 1,4775) * 10000}{3652425} \rfloor = \lfloor \frac{\lfloor d\rfloor * 10000 + 14775}{3652425} \rfloor
+    \tilde{y} = \lfloor \frac{(d + 1.4775) * 10000}{3652425} \rfloor = \lfloor \frac{d * 10000 + 14775}{3652425} \rfloor
     \label{eq:yearsfromdays}
 \end{equation}
 $$
