@@ -131,7 +131,9 @@ $$
 
 (Với $\tilde{D}(y)$ là hàm rời rạc của $D(y)$)
 
-<b>Qua công thức trên thì ta có nhận xét như sau:</b> Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7){:target="_blank"} <b>$\Rightarrow$ Nhờ đó, ta nhận thấy <b>lịch Gregorian lặp lại chính xác sau mỗi 400 năm và tuần hoàn theo chu kỳ này.</b> Nên ta chỉ cần xét và tối ưu trong khung 400 năm đầu tiên là đủ.</b>  
+<b>Qua công thức trên thì ta có nhận xét như sau:</b> Cứ mỗi bốn năm, $\lfloor\frac{y}{4}\rfloor$ sẽ được cộng thêm 1 ngày nhuận, nhưng việc này sẽ bị hủy bỏ sau mỗi thế kỷ $\lfloor\frac{y}{100}\rfloor$. Song, mỗi $\lfloor\frac{y}{400}\rfloor$ sẽ cộng lại 1 ngày nhuận. [(nguyên tắc bao hàm - loại trừ.)](https://wiki.vnoi.info/translate/he/Number-Theory-7){:target="_blank"} <b>
+
+$\Rightarrow$ Nhờ đó, ta nhận thấy <b>lịch Gregorian lặp lại chính xác sau mỗi 400 năm và tuần hoàn theo chu kỳ này.</b> Nên ta chỉ cần xét và tối ưu trong khung 400 năm đầu tiên là đủ.</b>  
 
 #### Vấn đề sai số
 
@@ -165,16 +167,16 @@ Do tồn tại sai số này, việc tìm năm sau khi biết tổng số ngày 
 
 ## Tính toán năm từ tổng số ngày trôi qua
 
-Cho $d$ là số ngày trôi qua kể từ 1/1/0, ta có thể tính số năm y dựa vào công thức sau:
+Cho $D$ là số ngày trôi qua kể từ 1/1/0, ta có thể tính số năm y dựa vào công thức sau:
 
 $$
 \begin{equation}
-    y \approx \frac{d}{365.2425} \Rightarrow \tilde{y} = \lfloor \frac{\lfloor d\rfloor}{365.2425} \rfloor
+    y \approx \frac{D}{365.2425} \quad \Rightarrow \quad \tilde{y} = \lfloor \frac{\lfloor D\rfloor}{365.2425} \rfloor
     \label{eq:approxy}
 \end{equation}
 $$
 
-Công thức trên đúng với độ chính xác cao trong hầu hết các trường hợp, ngoại trừ khi $d$ nằm gần mốc chuyển giao năm (tức là khi $d$ xấp xỉ một giá trị $\tilde{D}(y)$  nào đó — tổng số ngày tính đến hết năm thứ $y$). Tại những mốc này, sai số do sự xuất hiện hoặc biến mất của ngày nhuận trở nên rõ rệt, khiến phép chia xấp xỉ \eqref{eq:approxy} không còn chính xác.
+Công thức trên đúng với độ chính xác cao trong hầu hết các trường hợp, ngoại trừ khi $D$ nằm gần mốc chuyển giao năm (tức là khi $D$ xấp xỉ một giá trị $\tilde{D}(y)$  nào đó — tổng số ngày tính đến hết năm thứ $y$). Tại những mốc này, sai số do sự xuất hiện hoặc biến mất của ngày nhuận trở nên rõ rệt, khiến phép chia xấp xỉ \eqref{eq:approxy} không còn chính xác.
 
 <b>Ví dụ:</b>
 Giả sử ta có $d = 36524$ ngày và muốn tìm năm $y$ tương ứng.
@@ -197,23 +199,17 @@ $$
 
 $\Rightarrow$ Thực tế, $100$ năm lịch Gregorian mới chính xác là 36524 ngày (do năm thế kỷ không phải năm nhuận). 
 
-Đây chính là trường hợp d nằm trong khoảng sai số so với ranh giới của năm thứ 100, nếu dùng công thức \eqref{eq:approxy} để đảo ngược ngày thành năm, ta sẽ thu được kết quả sai lệch một năm.
+Đây chính là trường hợp D nằm trong khoảng sai số so với ranh giới của năm thứ 100, nếu dùng công thức \eqref{eq:approxy} để đảo ngược ngày thành năm, ta sẽ thu được kết quả sai lệch một năm.
 
 #### Cách khắc phục sai số từ ngày
 
-Để khắc phục sai lệch nói trên, ta đưa công thức \eqref{eq:approxy} về dạng tính toán hoàn toàn bằng số nguyên, nhằm tránh sai số khi thao tác với <b>dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic){:target="_blank"}):
+Vì làm việc trong C++ nên trước hết cần phải đưa công thức \eqref{eq:approxy} về dạng tính toán hoàn toàn bằng số nguyên, nhằm tránh sai số khi thao tác với <b>dấu phẩy động</b> ([floating-point numbers](https://en.wikipedia.org/wiki/Floating-point_arithmetic){:target="_blank"}):
 
 $$
-\tilde{y} = \lfloor \frac{\lfloor d\rfloor}{365.2425} \rfloor \Rightarrow \tilde{y} = \lfloor \frac{\lfloor d\rfloor * 10000}{3652425} \rfloor
+\tilde{y} = \lfloor \frac{\lfloor D\rfloor}{365.2425} \rfloor \le \frac{D}{365.2425} \quad \Rightarrow \quad \tilde{y} = \lfloor \frac{\lfloor D\rfloor * 10000}{3652425} \rfloor \le \frac{D * 10000}{3652425}
 $$
 
-Tuy nhiên, công thức trên vẫn có thể sai lệch do <b>hàm floor sẽ trả về giá trị nguyên nhỏ hơn hoặc bằng giá trị thực</b>. Cụ thể:
-
-$$
-\tilde{y} = \lfloor \frac{\lfloor d\rfloor * 10000}{3652425} \rfloor \leq y
-$$
-
-Để đảm bảo kết quả không bị trượt sai một đơn vị năm, ta cần bù thêm một hằng số $C$ sao cho $\tilde{y} > y$, mục đích là để khi floor thì giá trị luôn luôn bằng $y$. Một lựa chọn an toàn là ta sử dụng sai số cực đại mà ta tìm thấy ở $\eqref{eq:error_max}$
+Nhận thấy thường khi bị lệch $1$ năm thì y thực của chúng ta sẽ ở dạng $\tilde{y} = k + 0.999$... Để né hiện tượng này thì ta cần bù thêm một hằng số $C$ sao cho $\tilde{y} \geq \frac{D * 10000}{3652425}$, mục đích là để khi floor thì giá trị bằng $y$ hoặc $y + 1$. Lựa chọn chính xác và an toàn nhất đó là sử dụng sai số cực đại mà ta tìm thấy ở $\eqref{eq:error_max}$
 
 $$
 C = \varepsilon_{\max} = 1.4775
@@ -228,7 +224,7 @@ $$
 \end{equation}
 $$
 
-<b>Tuy nhiên, vì $\tilde{y} > y$ nên khi ta tìm lại năm thực tế thì cần phải có bước lùi năm. Điều này có thể thực hiện dễ dàng thông qua việc so sánh với hàm Gregorian (vì hàm này không có sai số).</b>
+Vì giá trị $\tilde{y}$ bằng $y$ hoặc $y + 1$ nên khi ta cần tìm lại năm chính xác thì cần phải có bước <b>lùi năm</b>. Điều này có thể thực hiện dễ dàng thông qua việc so sánh $D(\tilde{y})$ với $D(y)$.
 
 ## Tính toán tháng từ tổng số ngày trôi qua
 
@@ -263,11 +259,11 @@ $\Rightarrow$ Nhờ đặc tính này, ta có thể ánh xạ giữa chỉ số 
 Ta có tổng số ngày từ tháng 3 đến tháng 12 là <b>306 ngày</b>. Tức cứ sau mỗi 10 bước, ta đã dịch chuyển đúng 306 ngày. <b>Nói cách khác, “trung bình” cứ mỗi 1 bước tăng $\text{month_index}$ thì số ngày dời đi khoảng $\frac{306}{10}$ ngày.</b>
 
 Ta muốn một công thức nào đó có thể cho kết quả nguyên chính xác bằng “tổng số ngày đã trôi qua kể từ đầu tháng 3 của năm đó” khi $\text{month_index}$ là một số nguyên 0, 1, 2, … Cụ thể
-- Với $\text{month_index} = 0$ (tháng 3) $\Rightarrow \text{day_index} = 0$
-- Với $\text{month_index} = 1$ (tháng 4) $\Rightarrow \text{day_index} = 31$
-- Với $\text{month_index} = 2$ (tháng 5) $\Rightarrow \text{day_index} = 61$
+- Với $\text{month_index} = 0$ (tháng 3) $ \quad \Rightarrow \quad \text{day_index} = 0$
+- Với $\text{month_index} = 1$ (tháng 4) $\quad \Rightarrow \quad \text{day_index} = 31$
+- Với $\text{month_index} = 2$ (tháng 5) $\quad \Rightarrow \quad \text{day_index} = 61$
 - ...
-- Với $\text{month_index} = 10$ (tháng 1) $\Rightarrow \text{day_index} = 306$
+- Với $\text{month_index} = 10$ (tháng 1) $\quad \Rightarrow \quad \text{day_index} = 306$
 
 Qua đó, ta có thể tính số ngày kể từ đầu năm <b>(ngày 1 tháng 3 được coi là ngày 0)</b> của ngày mùng 1 của tháng đó bằng phần nguyên của hàm:
 
