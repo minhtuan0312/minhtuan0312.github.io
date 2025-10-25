@@ -7,7 +7,7 @@ tags: [tổ hợp, hệ số nhị thức, số học, thuyết đồng dư, ngu
 math: true
 ---
 
-`#note: thông tin trong bài blog này có thể chưa hoàn thiện và sẽ cập nhật ở tương lai`
+> thông tin trong bài blog này có thể chưa hoàn thiện và sẽ cập nhật ở tương lai
 
 Xin chào! chắc hẳn các bạn cũng đều biết cách tính toán tổ hợp trong một số bài toán rồi nhỉ, thường bài toán ấy sẽ yêu cầu chúng ta <b>đếm số cách để chọn/di chuyển đến/ đặt $\dots$</b> rồi sau đó chia dư cho $10^9 + 7$. Nhưng, trong trường hợp bài toán cho giới hạn $n$ và $k$ <b>rất lớn</b> $(n, k \leq10^{18})$ thì việc tính tổ hợp trở nên rất phức tạp nếu ta làm theo thông thường. Tuy nhiên, thường các bài toán ấy sẽ chỉ yêu cầu chúng ta <b>chia dư đáp án cho một module nhỏ</b> (ví dụ $10^5 + 3$) thì việc tính toán tổ hợp sẽ được đơn giản hóa thông qua <b>định lý Lucas</b> (Édouard Lucas, 1878).
 
