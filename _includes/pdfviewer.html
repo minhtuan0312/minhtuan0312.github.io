@@ -1,0 +1,78 @@
+<div id="pdf-container-{{ include.file | slugify }}" class="pdf-container"></div>
+
+<style>
+.pdf-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  transition: background-color 0.3s, color 0.3s;
+}
+html[data-theme="light"] .pdf-container {
+  background: #ffffff;
+  color: #000;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+html[data-theme="dark"] .pdf-container {
+  background: #1e1e1e;  
+  color: #e0e0e0;
+  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+/* mỗi trang */
+.pdf-page {
+  margin: 1rem 0;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+/* responsive canvas */
+.pdf-page canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>
+(function() {
+  const pdfUrl = "{{ include.file | relative_url }}";
+  const containerId = "pdf-container-{{ include.file | slugify }}";
+  const container = document.getElementById(containerId);
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+
+  pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+    const numPages = pdf.numPages;
+    for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+      pdf.getPage(pageNum).then(page => {
+        const scale = 2 * (window.devicePixelRatio || 1);
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const pageWrap = document.createElement("div");
+        pageWrap.className = "pdf-page";
+        pageWrap.appendChild(canvas);
+        container.appendChild(pageWrap);
+
+        const renderContext = { canvasContext: context, viewport };
+        page.render(renderContext);
+      });
+    }
+  }).catch(err => {
+    container.innerHTML =
+      "<p>Không thể tải PDF — kiểm tra đường dẫn hoặc quyền truy cập.</p>";
+    console.error(err);
+  });
+})();
+</script>

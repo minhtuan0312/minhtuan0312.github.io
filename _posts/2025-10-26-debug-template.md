@@ -2,6 +2,8 @@
 layout: post
 title: Template debug đi thi HSG🔥
 date: 2025-10-26 14:39 +0700
+categories: [template]
+tags: [debug]
 ---
 
 > Template debug này được mình thiết kế dễ học thuộc để đi thi và dễ dàng code nó hỗ trợ thêm stl bằng cách copy and paste. 
