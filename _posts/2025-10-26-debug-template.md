@@ -10,6 +10,8 @@ date: 2025-10-26 14:39 +0700
 >Tuy nhiên mình vẫn khuyến khích các bạn hiểu cách hoạt động của nó chứ không thuần chép template
 {: .prompt-warning }
 
+
+
 ## Template
 
 ```c++
@@ -17,10 +19,10 @@ date: 2025-10-26 14:39 +0700
 template<typename T1, typename T2>
 void __print(const pair<T1, T2> &p);
 
-template<typename T, typename... V>
+template<typename T, typename ...V>
 void __print(const vector<T, V...> &v);
 
-template<typename T1, typename T2, typename... V>
+template<typename T1, typename T2, typename ...V>
 void __print(const map<T1, T2, V...> &m);
 
 //generic fallback
@@ -37,7 +39,7 @@ void __print(const pair<T1, T2> &p) {
     cerr << ')';
 }
 
-template<typename T, typename... V>
+template<typename T, typename ...V>
 void __print(const vector<T, V...> &v) {
     cerr << '[';
     FOR(i, 0, sz(v)) {
@@ -47,7 +49,7 @@ void __print(const vector<T, V...> &v) {
     cerr << ']';
 }
 
-template<typename T1, typename T2, typename... V>
+template<typename T1, typename T2, typename ...V>
 void __print(const map<T1, T2, V...> &m) {
     cerr << '{';
     bool first = 1;
@@ -63,8 +65,8 @@ void __print(const map<T1, T2, V...> &m) {
 template<typename T>
 void _print(const T &t) {__print(t);}
 void _print() {}
-template<typename T, typename... V>
-void _print(const T &t, const V&... v) {
+template<typename T, typename ...V>
+void _print(const T &t, const V &...v) {
   __print(t); 
   if(sizeof...(v)) cerr << ", "; 
   _print(v...); 
