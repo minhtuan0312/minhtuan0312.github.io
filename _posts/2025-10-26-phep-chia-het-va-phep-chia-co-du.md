@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Phép chia hết và phép chia có dư 📝
+title: Phép chia hết và phép chia có dư📝
 date: 2025-10-26 20:28 +0700
 categories: [số học]
 tags: [note]
