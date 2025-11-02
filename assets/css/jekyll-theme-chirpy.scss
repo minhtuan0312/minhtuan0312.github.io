@@ -25,3 +25,45 @@ p.site-subtitle span {
   display: block; /* Forces each span to a new line */
   line-height: 1.6;
 }
+
+.problem-link {
+  background: var(--card-bg);
+  padding: 10px 15px;
+  border-left: 4px solid var(--link-color);
+  border-radius: 6px;
+  margin: 10px 0 20px;
+  font-size: 0.95rem;
+
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.code-link {
+  background: var(--card-bg);
+  padding: 10px 15px;
+  border-left: 4px solid #22c55e;
+  border-radius: 6px;
+  margin: 15px 0 25px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  a {
+    color: var(--link-color);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+

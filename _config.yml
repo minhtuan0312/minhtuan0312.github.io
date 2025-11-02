@@ -196,6 +196,7 @@ sass:
 #plugins
 plugins:
   - jekyll-compose
+  - jekyll-include-cache
 
 compress_html:
   clippings: all
