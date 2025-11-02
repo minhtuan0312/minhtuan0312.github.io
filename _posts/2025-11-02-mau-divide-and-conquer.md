@@ -2,6 +2,7 @@
 layout: post
 title: Template chia để trị siêu cơ bản🔥
 date: 2025-11-02 15:45 +0700
+categories: [algorithms, divide and conquer, template]
 ---
 
 ## Template
