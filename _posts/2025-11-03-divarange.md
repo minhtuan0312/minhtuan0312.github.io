@@ -65,7 +65,7 @@ $$
 
 ## Mã giải (C++)
 <div class="code-link">
-  <a href="https://github.com/minhtuan0312/competitive-programming/tree/27f9022bdaf0da007898a08f2da037cb83d6f0d0/practice/number_theory/28tech_contest_chuyen_de_so_hoc_phan_1/problems/bai4_SEMIPRIME" target="_blank">
+  <a href="https://github.com/minhtuan0312/competitive-programming/tree/c14a674ba21e10bce55e9aadbb79b4454799bb80/practice/number_theory/28tech_contest_chuyen_de_so_hoc_phan_1/problems/bai5_DIVARANGE" target="_blank">
     main.cpp
   </a>
 </div>
