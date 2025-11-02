@@ -2,7 +2,7 @@
 layout: post
 title: Thuật toán chuyển đổi thời gian hiệu quả trong O(1)⌛
 date: 2025-06-04 09:42 +0700
-categories: [thuật toán]
+categories: [algorithms, time]
 tags: [thời gian, lịch, date]
 math: true
 ---

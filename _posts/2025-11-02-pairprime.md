@@ -2,7 +2,7 @@
 layout: post
 title: Bài 3. Đếm cặp nguyên tố (PAIRPRIME)
 date: 2025-11-02 12:12 +0700
-categories: [practice, number_theory, 28tech]
+categories: [practice, 28tech_number_theory]
 tags: [nguyên tố]
 comments: false
 math: true

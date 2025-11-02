@@ -2,8 +2,8 @@
 layout: post
 title: Xử lý tổ hợp lớn với định lý Lucas🚀
 date: 2025-06-07 13:24 +0700
-categories: [số học, định lý]
-tags: [tổ hợp, hệ số nhị thức, số học, thuyết đồng dư, nguyên tố]
+categories: [number-theory]
+tags: [tổ hợp, hệ số nhị thức, thuyết đồng dư, nguyên tố]
 math: true
 ---
 

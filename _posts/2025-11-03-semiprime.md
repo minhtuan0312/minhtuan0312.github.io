@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Bài 4. Nửa nguyên tố (SEMIPRIME)
-date: 2025-11-02 12:12 +0700
-categories: [practice, number_theory, 28tech]
+date: 2025-11-03 01:12 +0700
+categories: [practice, 28tech_number_theory]
 tags: [nguyên tố]
 comments: false
 math: true
