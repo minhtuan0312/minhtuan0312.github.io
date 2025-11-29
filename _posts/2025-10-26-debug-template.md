@@ -29,7 +29,7 @@ void __print(const map<T1, T2, V...> &m);
 
 //generic fallback
 template<typename T>
-void __print(const T &x) {cerr << x;}
+void __print(const T &t) {cerr << t;}
 
 //definitions
 template<typename T1, typename T2>
@@ -74,13 +74,50 @@ void _print(const T &t, const V &...v) {
   _print(v...); 
 }
 
-#ifndef ONLINE_JUDGE
+#ifdef LOCAL
 #define deb(...) do {\
-    cerr << "[In " <<  __func__ << "(): line " << __LINE__ << "] [" << #__VA_ARGS__ << "] = [";\
+    cerr << "[In " <<  __func__ << "(): Line " << __LINE__ << "] [" << #__VA_ARGS__ << "] = [";\
     _print(__VA_ARGS__);\
     cerr << ']' << nl;\
 } while(0);
 #else
 #define deb(...)
 #endif
+```
+> Về "LOCAL": Trong Codeblocks, Vào Settings/Compiler/Compiler Settings, ở mục #defines nhập LOCAL vào 
+{: .prompt-info }
+
+## Test template:
+```c++
+int a = 42;
+double b = 3.1415;
+string s = "Hello";
+char c = 'Z';
+bool ok = true;
+
+pair<int, string> p = {7, "Seven"};
+vector<int> v = {1, 2, 3, 4};
+set<string> st = {"apple", "banana", "cherry"};
+map<string, int> mp = {{"Alice", 10}, {"Bob", 20}};
+
+vector<pair<int, int>> vp = {{1,2}, {3,4}, {5,6}};
+map<int, vector<int>> mv = {{1,{2,3}}, {4,{5,6,7}}};
+set<pair<int,int>> sp = {{1,2}, {3,4}};
+
+// ====== Test all ======
+deb(a);
+deb(b);
+deb(s);
+deb(c);
+deb(ok);
+deb(p);
+deb(v);
+deb(st);
+deb(mp);
+deb(vp);
+deb(mv);
+deb(sp);
+
+// multiple vars in one line
+deb(a, b, s, p, v);
 ```
