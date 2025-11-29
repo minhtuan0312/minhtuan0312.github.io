@@ -84,10 +84,11 @@ void _print(const T &t, const V &...v) {
 #define deb(...)
 #endif
 ```
-> Về "LOCAL": Trong Codeblocks, Vào Settings/Compiler/Compiler Settings, ở mục #defines nhập LOCAL vào 
+> Về "LOCAL": Trong Codeblocks, Vào Settings->Compiler/Compiler Settings, ở mục #defines nhập LOCAL vào 
 {: .prompt-info }
 
-## Test template:
+## Testing:
+{% raw %}
 ```c++
 int a = 42;
 double b = 3.1415;
@@ -104,7 +105,6 @@ vector<pair<int, int>> vp = {{1,2}, {3,4}, {5,6}};
 map<int, vector<int>> mv = {{1,{2,3}}, {4,{5,6,7}}};
 set<pair<int,int>> sp = {{1,2}, {3,4}};
 
-// ====== Test all ======
 deb(a);
 deb(b);
 deb(s);
@@ -118,6 +118,6 @@ deb(vp);
 deb(mv);
 deb(sp);
 
-// multiple vars in one line
 deb(a, b, s, p, v);
 ```
+{% endraw %}
