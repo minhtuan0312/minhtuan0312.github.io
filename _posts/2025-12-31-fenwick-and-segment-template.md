@@ -116,8 +116,8 @@ struct suffix_fenwick_tree {
 ```c++
 struct matrix {
     int n;
-    vector<vector<int>> f;
-    matrix(int a) : n(a), f(n, vector<int>(n, 0)) {}
+    vector<vector<ll>> f;
+    matrix(int a) : n(a), f(n, vector<ll>(n, 0)) {}
     matrix identity() const {
         matrix res(n);
         FOR(i, 0, n) res.f[i][i] = 1;
@@ -126,8 +126,9 @@ struct matrix {
     matrix operator * (const matrix &other) const {
         matrix res(n);
         FOR(i, 0, n) {
-            FOR(j, 0, n) {
-                FOR(k, 0, n) {
+            FOR(k, 0, n) {
+                if(!f[i][k]) continue;
+                FOR(j, 0, n) {
                     res.f[i][j] += f[i][k] * other.f[k][j] % mod;
                     res.f[i][j] %= mod;
                 }
