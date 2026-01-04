@@ -127,13 +127,13 @@ struct disjoint_set_union{
         return parent[u] = Find(parent[u]);
     }
 
-    bool Unite(int a, int b) {
-        a = Find(a);
-        b = Find(b);
-        if(a == b) return 0;
-        if(sz[a] < sz[b]) swap(a, b);
-        parent[b] = a;
-        sz[a] += sz[b];
+    bool Unite(int u, int v) {
+        u = Find(u);
+        v = Find(v);
+        if(u == v) return 0;
+        if(sz[u] < sz[v]) swap(u, v);
+        parent[v] = u;
+        sz[u] += sz[v];
         return 1;
     }
 };
