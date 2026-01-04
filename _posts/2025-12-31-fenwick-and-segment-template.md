@@ -112,6 +112,33 @@ struct suffix_fenwick_tree {
 };
 ```
 
+## Disjoint set union (1-based)
+```c++
+struct dsu{
+    vector<int> parent, sz;
+    dsu() {}
+    dsu(int a) : parent(a + 1) {
+        sz.assign(a + 1, 1);
+        iota(all(parent), 0);
+    }
+
+    int Find(int u) {
+        if(u == parent[u]) return u;
+        return parent[u] = Find(parent[u]);
+    }
+
+    bool Unite(int a, int b) {
+        a = Find(a);
+        b = Find(b);
+        if(a == b) return 0;
+        if(sz[a] < sz[b]) swap(a, b);
+        parent[b] = a;
+        sz[a] += sz[b];
+        return 1;
+    }
+};
+```
+
 ## Matrix (0-based)
 ```c++
 struct matrix {
