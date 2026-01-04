@@ -114,10 +114,10 @@ struct suffix_fenwick_tree {
 
 ## Disjoint set union (1-based)
 ```c++
-struct dsu{
+struct disjoint_set_union{
     vector<int> parent, sz;
-    dsu() {}
-    dsu(int a) : parent(a + 1) {
+    disjoint_set_union() {}
+    disjoint_set_union(int a) : parent(a + 1) {
         sz.assign(a + 1, 1);
         iota(all(parent), 0);
     }
