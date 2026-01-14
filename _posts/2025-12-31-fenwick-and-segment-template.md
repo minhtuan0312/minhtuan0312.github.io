@@ -139,6 +139,63 @@ struct disjoint_set_union{
 };
 ```
 
+## Disjoint set union Rollback
+```c++
+struct DSURollback{
+    vector<int> parent, sz;
+    int comps;
+
+    struct Data{
+        int u, v;
+        int old_sz_u;
+        bool merged;
+    };
+
+    stack<Data> st;
+    DSURollback() {}
+    DSURollback(int n) : parent(n + 1) {
+        FOR(i, 1, n + 1) parent[i] = i;
+        sz.assign(n + 1, 1);
+        comps = n;
+    }
+    int Find(int u) {
+        while(u != parent[u]) u = parent[u];
+        return u;
+    }
+    bool Unite(int u, int v) {
+        u = Find(u);
+        v = Find(v);
+        if(u == v) {
+            st.push({0, 0, 0, false});
+            return 0;
+        }
+        if(sz[u] < sz[v]) swap(u, v);
+
+        st.push({u, v, sz[u], true});
+
+        sz[u] += sz[v];
+        parent[v] = u;
+        comps--;
+        return 1;
+    }
+    int Snapshot() {
+        return sz(st);
+    }
+    void Rollback() {
+        auto cur = st.top(); st.pop();
+        if(!cur.merged) return;
+        sz[cur.u] = cur.old_sz_u;
+        parent[cur.v] = cur.v;
+        comps++;
+    }
+    void Rollback(int snap) {
+        while(sz(st) > snap) {
+            Rollback();
+        }
+    }
+};
+```
+
 ## Matrix (0-based)
 ```c++
 struct matrix {
@@ -179,34 +236,74 @@ struct matrix {
 ## Trie
 ```c++
 const int limN = 1e4 + 5;
-const int limSz = 50 + 5;
+const int limSz = 55;
 struct trie {
     static const int MAXNODE = limN * limSz;
-    int nx[MAXNODE][26];
-    bool isEnd[MAXNODE];
+    int nxt[MAXNODE][26];
+    int cntEnd[MAXNODE]; // có bao nhiêu string kết thúc đúng tại u
+    int cntPass[MAXNODE]; // có bao nhiêu string đang tồn tại đi qua u
     int cnt;
+
     trie() {
         cnt = 0;
-        memset(nx, 0, sizeof nx);
-        memset(isEnd, 0, sizeof isEnd);
+        memset(nxt, 0, sizeof nxt);
+        memset(cntEnd, 0, sizeof cntEnd);
+        memset(cntPass, 0, sizeof cntPass);
     }
-    void upd(const string& s) {
+
+    void upd(const string &s) {
         int u = 0;
-        for (char c : s) {
+        cntPass[u]++;
+        for(char c : s) {
             int k = c - 'a';
-            if (!nx[u][k]) nx[u][k] = ++cnt;
-            u = nx[u][k];
+            if(!nxt[u][k]) nxt[u][k] = ++cnt;
+            u = nxt[u][k];
+            cntPass[u]++;
         }
-        isEnd[u] = 1;
+        cntEnd[u]++;
     }
-    bool query(const string& s) {
+
+    bool exist(const string &s) {
         int u = 0;
-        for (char c : s) {
+        for(char c : s) {
             int k = c - 'a';
-            if (!nx[u][k]) return 0;
-            u = nx[u][k];
+            if(!nxt[u][k]) return 0;
+            u = nxt[u][k];
         }
-        return isEnd[u];
+        return cntEnd[u] > 0;
+    }
+
+    int countString(const string &s) {
+        int u = 0;
+        for(char c : s) {
+            int k = c - 'a';
+            if(!nxt[u][k]) return 0;
+            u = nxt[u][k];
+        }
+        return cntEnd[u];
+    }
+
+    int countPrefix(const string &s) {
+        int u = 0;
+        for(char c : s) {
+            int k = c - 'a';
+            if(!nxt[u][k]) return 0;
+            u = nxt[u][k];
+        }
+        return cntPass[u];
+    }
+
+    bool del(const string &s) {
+        if(!exist(s)) return 0;
+        int u = 0;
+        cntPass[u]--;
+        for(char c: s) {
+            int k = c - 'a';
+            u = nxt[u][k];
+            cntPass[u]--;
+        }
+        cntEnd[u]--;
+        return 1;
     }
 };
 ```
