@@ -175,3 +175,73 @@ struct matrix {
     }
 };
 ```
+
+## Trie
+```c++
+const int limN = 1e4 + 5;
+const int limSz = 50 + 5;
+struct trie {
+    static const int MAXNODE = limN * limSz;
+    int nx[MAXNODE][26];
+    bool isEnd[MAXNODE];
+    int cnt;
+    trie() {
+        cnt = 0;
+        memset(nx, 0, sizeof nx);
+        memset(isEnd, 0, sizeof isEnd);
+    }
+    void upd(const string& s) {
+        int u = 0;
+        for (char c : s) {
+            int k = c - 'a';
+            if (!nx[u][k]) nx[u][k] = ++cnt;
+            u = nx[u][k];
+        }
+        isEnd[u] = 1;
+    }
+    bool query(const string& s) {
+        int u = 0;
+        for (char c : s) {
+            int k = c - 'a';
+            if (!nx[u][k]) return 0;
+            u = nx[u][k];
+        }
+        return isEnd[u];
+    }
+};
+```
+
+
+## Trie xor
+```c++
+const int limN = 1e5 + 5;
+const int limSz = 31;
+struct trie_xor {
+    static const int MAXNODE = limN * limSz;
+    int nxt[MAXNODE][2];
+    int cnt;
+    trie_xor() {
+        cnt = 0;
+        memset(nxt, 0, sizeof nxt);
+    }
+    void upd(int x) {
+        int u = 0;
+        for (int i = 30; i >= 0; i--) {
+            int k = (x >> i) & 1;
+            if (!nxt[u][k]) nxt[u][k] = ++cnt;
+            u = nxt[u][k];
+        }
+    }
+    int getMax(int x) {
+        int u = 0, res = 0;
+        for (int i = 30; i >= 0; i--) {
+            int k = (x >> i) & 1;
+            if (nxt[u][k ^ 1]) {
+                res |= (1 << i);
+                u = nxt[u][k ^ 1];
+            } else u = nxt[u][k];
+        }
+        return res;
+    }
+};
+```
