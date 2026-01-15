@@ -116,10 +116,12 @@ struct suffix_fenwick_tree {
 ```c++
 struct disjoint_set_union{
     vector<int> parent, sz;
+    int comps;
     disjoint_set_union() {}
     disjoint_set_union(int a) : parent(a + 1) {
         sz.assign(a + 1, 1);
         iota(all(parent), 0);
+        comps = a;
     }
 
     int Find(int u) {
@@ -134,29 +136,47 @@ struct disjoint_set_union{
         if(sz[u] < sz[v]) swap(u, v);
         parent[v] = u;
         sz[u] += sz[v];
+        comps--;
         return 1;
     }
 };
 ```
 
-## Disjoint set union Rollback
+## Khung rollback chung cho một số Data Structure
 ```c++
-struct DSURollback{
+struct data_structure{
+    vector<pair<int*, int>> st;
+    void Save(int &x) {
+        st.eb(&x, x);
+    }
+    ...
+    int Snapshot() {
+        return sz(st);
+    }
+    void Rollback(int snap) {
+        while(sz(st) > snap) {
+            *st.back().first = st.back().second;
+            st.pop_back();
+        }
+    }
+}
+```
+> Ví dụ với dsu
+{: .prompt-info }
+
+```c++
+struct disjoint_set_union_rollback{
     vector<int> parent, sz;
     int comps;
-
-    struct Data{
-        int u, v;
-        int old_sz_u;
-        bool merged;
-    };
-
-    stack<Data> st;
-    DSURollback() {}
-    DSURollback(int n) : parent(n + 1) {
+    disjoint_set_union_rollback() {}
+    disjoint_set_union_rollback(int n) : parent(n + 1) {
         FOR(i, 1, n + 1) parent[i] = i;
         sz.assign(n + 1, 1);
         comps = n;
+    }
+    vector<pair<int*, int>> st;
+    void Save(int &x) {
+        st.eb(&x, x);
     }
     int Find(int u) {
         while(u != parent[u]) u = parent[u];
@@ -165,13 +185,12 @@ struct DSURollback{
     bool Unite(int u, int v) {
         u = Find(u);
         v = Find(v);
-        if(u == v) {
-            st.push({0, 0, 0, false});
-            return 0;
-        }
+        if(u == v) return 0;
         if(sz[u] < sz[v]) swap(u, v);
 
-        st.push({u, v, sz[u], true});
+        Save(parent[v]);
+        Save(sz[u]);
+        Save(comps);
 
         sz[u] += sz[v];
         parent[v] = u;
@@ -181,16 +200,10 @@ struct DSURollback{
     int Snapshot() {
         return sz(st);
     }
-    void Rollback() {
-        auto cur = st.top(); st.pop();
-        if(!cur.merged) return;
-        sz[cur.u] = cur.old_sz_u;
-        parent[cur.v] = cur.v;
-        comps++;
-    }
     void Rollback(int snap) {
         while(sz(st) > snap) {
-            Rollback();
+            *st.back().first = st.back().second;
+            st.pop_back();
         }
     }
 };
@@ -251,7 +264,7 @@ struct trie {
         memset(cntPass, 0, sizeof cntPass);
     }
 
-    void upd(const string &s) {
+    void Update(const string &s) {
         int u = 0;
         cntPass[u]++;
         for(char c : s) {
@@ -263,7 +276,7 @@ struct trie {
         cntEnd[u]++;
     }
 
-    bool exist(const string &s) {
+    bool Exist(const string &s) {
         int u = 0;
         for(char c : s) {
             int k = c - 'a';
@@ -273,7 +286,7 @@ struct trie {
         return cntEnd[u] > 0;
     }
 
-    int countString(const string &s) {
+    int CountString(const string &s) {
         int u = 0;
         for(char c : s) {
             int k = c - 'a';
@@ -283,7 +296,7 @@ struct trie {
         return cntEnd[u];
     }
 
-    int countPrefix(const string &s) {
+    int CountPrefix(const string &s) {
         int u = 0;
         for(char c : s) {
             int k = c - 'a';
@@ -293,7 +306,7 @@ struct trie {
         return cntPass[u];
     }
 
-    bool del(const string &s) {
+    bool Delete(const string &s) {
         if(!exist(s)) return 0;
         int u = 0;
         cntPass[u]--;
