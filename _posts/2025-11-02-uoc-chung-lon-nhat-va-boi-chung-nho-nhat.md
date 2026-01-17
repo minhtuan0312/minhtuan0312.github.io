@@ -11,15 +11,31 @@ math: true
 
 ## Một số tính chất hữu ích trong CP
 #### Tính chất 1
-Giả sử $u = \gcd(a, X)$ và $v = \gcd(b, Y)$.
+$$
+\begin{aligned}
+&u = \gcd(a, X) \quad &\Rightarrow\quad u \mid a\\
+&v = \gcd(b, Y) \quad &\Rightarrow\quad v \mid b
+\end{aligned}
+$$
+$$
+\quad \Rightarrow \quad \gcd(u, v) \mid \gcd(a, b).
+$$
 
-Khi đó $u \mid a$ và $v \mid b$.
-Suy ra $\gcd(u, v) \mid \gcd(a, b)$.
+Áp dụng với
 
-Đặc biệt, nếu $\gcd(a, b) = 1$ thì $\gcd(u, v) = 1$.
+$$
+\begin{aligned}
+&a = n \\
+&b = n - 1
+\end{aligned}
+$$
+$$
+\quad \Rightarrow \quad \gcd(u, v) \mid \gcd(n, n-1) = 1
+\;\Rightarrow\;
+\gcd(u, v) = 1.
+$$
 
-Áp dụng với <b>$\quad a = n,\quad b = n-1\quad $</b> ta có
-$\gcd(n, n - 1) = 1 \Rightarrow \gcd(u, v) = 1$.
+(2 số nguyên liên tiếp luôn nguyên tố cùng nhau)
 
 > [https://codeforces.com/problemset/problem/1732/A](https://codeforces.com/problemset/problem/1732/A)
 {: .prompt-info }
