@@ -307,7 +307,7 @@ struct trie {
     }
 
     bool Delete(const string &s) {
-        if(!exist(s)) return 0;
+        if(!Exist(s)) return 0;
         int u = 0;
         cntPass[u]--;
         for(char c: s) {
