@@ -1,11 +1,42 @@
 ---
 layout: post
-title: Một số template, code Lý thuyết số học🐧
+title: Một số Lý thuyết số học🐧
 date: 2026-02-11 14:14 +0700
 categories: [number-theory, template]
 tags: [tổ hợp, hệ số nhị thức, thuyết đồng dư, nguyên tố]
 math: true
 ---
+
+## Phương pháp phân nhóm theo số chữ số
+
+Dãy số: $1, 2, 3, \dots, 9, 10, 11, \dots, 99, 100, \dots$
+- Nhóm 1: Có 9 số có 1 chữ số ($1 \to 9$) $\rightarrow$ $9 \times 1 = 9$ chữ số.
+- Nhóm 2: Có 90 số có 2 chữ số ($10 \to 99$) $\rightarrow$ $90 \times 2 = 180$ chữ số.
+- Nhóm 3: Có 900 số có 3 chữ số ($100 \to 999$) $\rightarrow$ $900 \times 3 = 2700$ chữ số.
+
+$\Rightarrow \quad$ Tổng quát: Nhóm có $len$ chữ số sẽ có $9 \times 10^{len-1} \times len$ chữ số.
+
+```c++
+ll len = 1;      // Số chữ số của các số trong nhóm hiện tại
+ll cnt = 9;    // Số lượng số trong nhóm hiện tại (9, 90, 900...)
+ll start = 1;    // Số bắt đầu của nhóm (1, 10, 100...)
+
+// Bước 1: Xác định xem n nằm trong nhóm có bao nhiêu chữ số
+while (n > len * cnt) {
+    n -= len * cnt;
+    len++;
+    cnt *= 10;
+    start *= 10;
+}
+
+// Bước 2: Tìm số cụ thể chứa chữ số thứ n
+// (n-1) để chuyển về 0-indexed trong phạm vi nhóm
+ll target = start + (n - 1) / len;
+
+// Bước 3: Tìm chữ số cụ thể trong target
+string s = to_string(target);
+cout << s[(n - 1) % len];
+```
 
 ## <b>Nghịch đảo modulo</b>
 #### TH1: M là số nguyên tố
