@@ -7,7 +7,7 @@ tags: [tổ hợp, hệ số nhị thức, thuyết đồng dư, nguyên tố]
 math: true
 ---
 
-## Phương pháp phân nhóm theo số chữ số
+## <b>Phương pháp phân nhóm theo số chữ số</b>
 
 Dãy số: $1, 2, 3, \dots, 9, 10, 11, \dots, 99, 100, \dots$
 - Nhóm 1: Có 9 số có 1 chữ số ($1 \to 9$) $\rightarrow$ $9 \times 1 = 9$ chữ số.
@@ -38,7 +38,7 @@ string s = to_string(target);
 cout << s[(n - 1) % len];
 ```
 
-## Floor/ceil
+## <b>Floor/ceil</b>
 ```c++
 // bit trick
 // a ^ b >= 0: cùng dấu
@@ -53,7 +53,7 @@ ll ceil_div(long long a, long long b) {
 }
 ```
 
-## Diophinate tìm các nghiệm
+## <b>Thuật toán Euclid mở rộng</b>
 ```c++
 ll extended_euclid(ll a, ll b, ll &x, ll &y) {
     if(b == 0) {
@@ -67,7 +67,10 @@ ll extended_euclid(ll a, ll b, ll &x, ll &y) {
     y = x1 - y1 * (a / b);
     return g;
 }
+```
 
+## <b>Diophinate tìm các nghiệm</b>
+```c++
 bool exist_solution(ll a, ll b, ll c, ll &x, ll &y, ll &g){
     g = extended_euclid(abs(a), abs(b), x, y);
     if(c % g) return 0;
@@ -76,13 +79,6 @@ bool exist_solution(ll a, ll b, ll c, ll &x, ll &y, ll &g){
     if(a < 0) x = -x;
     if(b < 0) y = -y;
     return 1;
-}
-
-ll floor_div(ll a, ll b) {
-    return a / b - ((a % b != 0) & ((a ^ b) < 0));
-}
-ll ceil_div(ll a, ll b) {
-    return a / b + ((a % b != 0) & ((a ^ b) >= 0));
 }
 
 // x = x0 + b/g
@@ -136,19 +132,6 @@ bin_pow(a, m - 2, m)
 ```
 #### TH2: M là hợp số (Euclid mở rộng)
 ```c++
-ll extended_euclid(ll a, ll b, ll &x, ll &y) {
-    if(b == 0) {
-       x = 1;
-       y = 0;
-       return a; 
-    }
-    ll x1, y1;
-    ll g = extended_euclid(b, a % b, x1, y1);
-    x = y1;
-    y = x1 - y1 * (a / b);
-    return g;
-}
-
 ll modinv(ll a, ll m) {
     ll x, y;
     ll g = extended_euclid(a, m, x, y);
@@ -434,19 +417,6 @@ void init() {
             fact_exclude[i] = fact_exclude[i - 1];
         }
     }
-}
-
-ll extended_euclid(ll a, ll b, ll &x, ll &y) {
-    if(b == 0) {
-        x = 1;
-        y = 0;
-        return a;
-    }
-    ll x1, y1;
-    ll g = extended_euclid(b, a % b, x1, y1);
-    x = y1;
-    y = x1 - y1 * (a / b);
-    return g;
 }
 
 ll mod_inv(ll a, ll m) {
