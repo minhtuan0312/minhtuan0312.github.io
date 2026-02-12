@@ -38,6 +38,87 @@ string s = to_string(target);
 cout << s[(n - 1) % len];
 ```
 
+## Floor/ceil
+```c++
+// bit trick
+// a ^ b >= 0: cùng dấu
+// a ^ b < 0: trái dấu
+
+ll floor_div(long long a, long long b) {
+    return a / b - ((a % b != 0) & ((a ^ b) < 0));
+}
+
+ll ceil_div(long long a, long long b) {
+    return a / b + ((a % b != 0) & ((a ^ b) >= 0));
+}
+```
+
+## Diophinate tìm các nghiệm
+```c++
+ll extended_euclid(ll a, ll b, ll &x, ll &y) {
+    if(b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    ll x1, y1;
+    ll g = extended_euclid(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - y1 * (a / b);
+    return g;
+}
+
+bool exist_solution(ll a, ll b, ll c, ll &x, ll &y, ll &g){
+    g = extended_euclid(abs(a), abs(b), x, y);
+    if(c % g) return 0;
+    x *= c / g;
+    y *= c / g;
+    if(a < 0) x = -x;
+    if(b < 0) y = -y;
+    return 1;
+}
+
+ll floor_div(ll a, ll b) {
+    return a / b - ((a % b != 0) & ((a ^ b) < 0));
+}
+ll ceil_div(ll a, ll b) {
+    return a / b + ((a % b != 0) & ((a ^ b) >= 0));
+}
+
+// x = x0 + b/g
+// y = y0 - a/g
+ll find_all_solutions(ll a, ll b, ll c, ll minx, ll maxx, ll miny, ll maxy) {
+    ll x0, y0, g;
+    if(!exist_solution(a, b, c, x0, y0, g)) return 0;
+    a /= g; // chuan hoa
+    b /= g;
+
+    // x = x0 + k*b  =>  minx <= x0 + k*b <= maxx
+    ll kx1, kx2;
+    if(b > 0) {
+        kx1 = ceil_div(minx - x0, b);
+        kx2 = floor_div(maxx - x0, b);
+    } else {
+        kx1 = ceil_div(maxx - x0, b);
+        kx2 = floor_div(minx - x0, b);
+    }
+    // y = y0 - k*a => miny <= y0 - k*a <= maxy
+    // => -miny + y0 >= k*a >= -maxy + y0
+    ll ky1, ky2;
+    if(a > 0) {
+        ky1 = ceil_div(-maxy + y0, a);
+        ky2 = floor_div(-miny + y0, a);
+    } else {
+        ky1 = ceil_div(-miny + y0, a);
+        ky2 = floor_div(-maxy + y0, a);
+    }
+    ll l = max(kx1, ky1);
+    ll r = min(kx2, ky2);
+    if(l > r) return 0;
+    else return r - l + 1;
+}
+```
+
 ## <b>Nghịch đảo modulo</b>
 #### TH1: M là số nguyên tố
 ```c++

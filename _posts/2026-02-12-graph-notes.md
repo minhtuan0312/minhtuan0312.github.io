@@ -232,6 +232,74 @@ FOR(i, 1, n + 1) {
 }
 ```
 
+### Thuật toán Dijkstra trên lưới 2D
+
+<div class="problem-link">
+  🔗 <strong>Ví dụ:</strong>
+  <a href="https://oj.vnoi.info/problem/hcm_thpt_21_c" target="_blank">
+    HSG THPT TPHCM 2021 - Tìm đường
+  </a>
+</div>
+```c++
+const int limN = 505;
+typedef pair<ll, pair<int, int>> iii;
+
+int dx[4] = {0, 0, -1, 1};
+int dy[4] = {1, -1, 0, 0};
+ll A[limN][limN], dist[limN][limN];
+int n;
+void dijkstra(int s, int t) {
+
+    memset(dist, 0x3f, sizeof dist);
+    priority_queue<iii, vector<iii>, greater<iii>> pq;
+    pq.push({0, {s, t}});
+    dist[s][t] = 0;
+    while(!pq.empty()) {
+        iii u = pq.top(); pq.pop();
+        ll d = u.fi;
+        auto [x, y] = u.se;
+        if(d > dist[x][y]) continue;
+        FOR(k, 0, 4) {
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            if(nx > 0 && ny > 0 && nx <= n && ny <= n) {
+                // relax
+                ll nd = max(dist[x][y], abs(A[nx][ny] - A[x][y]));
+                if(dist[nx][ny] > nd) {
+                    dist[nx][ny] = nd;
+                    pq.push({nd, {nx, ny}});
+                }
+            }
+        }
+    }
+
+}
+
+int main(void) {
+    minhtuan0312;
+
+    #define TASK ""
+    if (fopen(TASK ".inp", "r")) {
+        freopen(TASK ".inp", "r", stdin);
+        freopen(TASK ".out", "w", stdout);
+    }
+
+    cin >> n;
+    FOR(i, 1, n + 1) {
+        FOR(j, 1, n + 1) {
+            cin >> A[i][j];
+        }
+    }
+
+    dijkstra(1, 1);
+
+    cout << dist[n][n];
+
+    return (0 ^ 0);
+
+}
+```
+
 ### Thuật toán Bellman Ford
 Setup
 ```c++
