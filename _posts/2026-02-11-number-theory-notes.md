@@ -38,7 +38,7 @@ string s = to_string(target);
 cout << s[(n - 1) % len];
 ```
 
-## <b>Floor/ceil</b>
+## <b>Floor/ceil trick</b>
 ```c++
 // bit trick
 // a ^ b >= 0: cùng dấu
@@ -52,6 +52,37 @@ ll ceil_div(long long a, long long b) {
     return a / b + ((a % b != 0) & ((a ^ b) >= 0));
 }
 ```
+
+## <b>Định lý Dilworth</b> (bài toán lồng nhau, ...)
+
+### Bản chất
+
+Định lý này áp dụng trên một Tập thứ tự bộ phận (Partially Ordered Set - POSET).
+
+- <b>Chuỗi (Chain):</b> Một tập hợp con mà mọi cặp phần tử đều so sánh được với nhau (ví dụ: $a \le b \le c \dots$ giống như búp bê Nga lồng vào nhau).
+
+- <b>Đối xích (Antichain):</b> Một tập hợp con mà không có cặp phần tử nào so sánh được với nhau (độc lập hoàn toàn).
+
+> <b>Phát biểu:</b> Số lượng tối thiểu các Chuỗi cần thiết để phủ kín tập hợp = Kích thước của Đối xích dài nhất (Maximum Antichain).
+{: .prompt-info }
+
+### Một số bài toán kinh điển
+
+<b>1. Dãy số:</b> Cho một dãy số, tìm số lượng tối thiểu các dãy con tăng dần để phủ hết dãy số ban đầu.
+
+<b>2. Hình học (Nested Boxes):</b> Cho các hộp có kích thước $(w, h)$. Hộp A lồng được vào B nếu $w_A < w_B$ và $h_A < h_B$. Tìm số hộp ít nhất không lồng nhau (Max Antichain) hoặc số chồng hộp ít nhất (Min Chain Cover).
+
+### Bảng tổng quát
+
+Quy tắc: <b>"Có dấu BẰNG thì mất, không có dấu BẰNG thì thêm."</b>
+
+| # | Yêu cầu bài toán | Chain | Antichain | Dilworth |
+|:--:|-----------------|:----:|:---------:|--------|
+| 1 | Phủ bằng dãy **không giảm** | $\le$ | $>$ | Dãy con **giảm dần** |
+| 2 | Phủ bằng dãy **không tăng** | $\ge$ | $<$ | Dãy con **tăng dần** |
+| 3 | Phủ bằng dãy **tăng nghiêm ngặt** | $<$ | $\ge$ | Dãy con **không tăng** |
+| 4 | Phủ bằng dãy **giảm nghiêm ngặt** | $>$ | $\le$ | Dãy con **không giảm** |
+
 
 ## <b>Thuật toán Euclid mở rộng</b>
 ```c++
