@@ -38,20 +38,112 @@ string s = to_string(target);
 cout << s[(n - 1) % len];
 ```
 
+## <b>Digital Root trong tổng các chữ số</b>
+
+### Khái niệm
+
+<b>Digit Sum:</b> Là kết quả của việc cộng tất cả các chữ số của một số tự nhiên lại với nhau.
+
+<b>Digital Root:</b> Là giá trị nhận được khi thực hiện tổng các chữ số liên tiếp nhiều lần cho đến khi chỉ còn lại <b>một chữ số duy nhất</b> (từ 1 $\to$ 9).
+
+> <b>Quy tắc:</b> Digital Root của một số $n$ chính là số dư của phép chia $n$ cho 9, một ngoại lệ là khi phép chia dư 0 thì kết quả là 9.
+{: .prompt-info }
+
+> <b>Công thức tổng quát:</b> $$dr(n) = 1 + ((n - 1) \pmod 9)$$
+{: .prompt-info }
+
+### Một số tính chất đặc biệt
+
+- <b>Casting Out Nines:</b> Digital Root của một tổng (hoặc tích) bằng tổng (hoặc tích) các Digital Root của các thành phần. (Được dùng để kiểm tra độ chính xác của một phép cộng hoặc phép nhân)
+
+$$dr(A + B) = dr(dr(A) + dr(B))$$
+
+$$dr(A \times B) = dr(dr(A) \times dr(B))$$
+
+- <b>Dấu hiệu chia hết 3 và 9:</b> Một số chia hết cho 3 (hoặc 9) khi và chỉ khi Digital Root của nó chia hết cho 3 (hoặc là 9). 
+
+- <b>Hiệu số:</b> Hiệu của một số và tổng các chữ số của nó luôn chia hết cho 9.
+
+$$9 \mid (n - dr(n))$$
+
 ## <b>Floor/ceil trick</b>
 ```c++
 // bit trick
 // a ^ b >= 0: cùng dấu
 // a ^ b < 0: trái dấu
 
-ll floor_div(long long a, long long b) {
+ll floor_div(ll a, ll b) {
     return a / b - ((a % b != 0) & ((a ^ b) < 0));
 }
 
-ll ceil_div(long long a, long long b) {
+ll ceil_div(ll a, ll b) {
     return a / b + ((a % b != 0) & ((a ^ b) >= 0));
 }
 ```
+
+## <b>Kiểm tra $M$ có nằm trong hoặc trên cạnh $\triangle ABC$</b>
+
+### Cách 1: Dựa trên tổng diện tích (Area Method)
+
+> <b>Công thức:</b> $$S_{ABC} = S_{ABM} + S_{BCM} + S_{CAM}$$
+{: .prompt-info }
+
+$\Rightarrow \quad$ Nếu $M$ nằm ngoài, tổng diện tích 3 tam giác con sẽ lớn hơn $S_{ABC}$.
+
+```c++
+struct Point {
+    double x, y;
+};
+double area(Point A, Point B, Point C) { // sử dụng công thức shoelace
+    return 0.5 * abs(A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)); 
+}
+inline bool inside_area(Point A, Point B, Point C, Point M) {
+    double S_ABC = area(A, B, C);
+    double S_ABM = area(A, B, M);
+    double S_BCM = area(B, C, M);
+    double S_CAM = area(C, A, M);
+
+    double epsilon = 1e-9;
+    return abs(S_ABC - (S_ABM + S_BCM + S_CAM)) < epsilon;
+}
+```
+
+### Cách 2: Dựa vào Tích có hướng (Cross Product / Orientation)
+
+> <b>Nguyên lý:</b> Điểm $M$ nằm trong tam giác $ABC$ khi và chỉ khi $M$ nằm cùng phía đối với cả 3 đường thẳng chứa cạnh tam giác. (Xác định hướng nằm của M sử dụng quy tắc bàn tay phải)
+{: .prompt-info }
+
+> <b>Công thức tích có hướng:</b> Với 3 điểm $A, B, M$, tích có hướng của $\vec{AB}$ và $\vec{AM}$ là: $$CP = (x_B - x_A)(y_M - y_A) - (y_B - y_A)(x_M - x_A)$$
+{: .prompt-info }
+
+- Nếu $CP > 0$: $M$ nằm bên trái $\vec{AB}$.
+- Nếu $CP < 0$: $M$ nằm bên phải $\vec{AB}$.
+- Nếu $CP = 0$: $M$ thẳng hàng với $\vec{AB}$.
+
+```c++
+struct Point {
+    double x, y;
+};
+ll cross(Point A, Point B, Point C) {
+    return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+}
+inline bool inside_area(Point A, Point B, Point C, Point M) {
+    ll cp1 = cross(A, B, M);
+    ll cp2 = cross(B, C, M);
+    ll cp3 = cross(C, A, M);
+    return ((cp1 >= 0 && cp2 >= 0 && cp3 >= 0) || (cp1 <= 0 && cp2 <= 0 && cp3 <= 0));
+}
+```
+
+### So sánh
+
+| Đặc điểm | Cách 1 (Diện tích) | Cách 2 (Tích có hướng) |
+|:----------|:-------------------:|:----------------------:|
+| **Độ chính xác** | Thấp (do sai số `double`) | Tuyệt đối|
+| **Tốc độ** | Chậm hơn (phép chia/căn) | Rất nhanh (chỉ nhân/cộng) |
+| **Độ phức tạp** | $O(1)$ | $O(1)$ |
+| **Khuyên dùng** | Toán phổ thông, lý thuyết | Lập trình thi đấu |
+
 
 ## <b>Định lý Dilworth</b> (bài toán lồng nhau, ...)
 
