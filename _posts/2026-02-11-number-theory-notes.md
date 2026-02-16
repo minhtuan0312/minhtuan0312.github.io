@@ -52,7 +52,7 @@ cout << s[(n - 1) % len];
 > <b>Công thức tổng quát:</b> $$dr(n) = 1 + ((n - 1) \pmod 9)$$
 {: .prompt-info }
 
-### Một số tính chất đặc biệt
+### Một số tính chất
 
 - <b>Casting Out Nines:</b> Digital Root của một tổng (hoặc tích) bằng tổng (hoặc tích) các Digital Root của các thành phần. (Được dùng để kiểm tra độ chính xác của một phép cộng hoặc phép nhân)
 
@@ -65,6 +65,16 @@ $$dr(A \times B) = dr(dr(A) \times dr(B))$$
 - <b>Hiệu số:</b> Hiệu của một số và tổng các chữ số của nó luôn chia hết cho 9.
 
 $$9 \mid (n - dr(n))$$
+
+- <b>Tổng các digital sum từ $1$ đến $n$:</b>
+
+```c++
+ll compute(ll n) {
+    ll q = n / 9;
+    ll r = n % 9;
+    return 45 * q + r *(r + 1) / 2;
+}
+```
 
 ## <b>Floor/ceil trick</b>
 ```c++
@@ -144,6 +154,45 @@ inline bool inside_area(Point A, Point B, Point C, Point M) {
 | **Độ phức tạp** | $O(1)$ | $O(1)$ |
 | **Khuyên dùng** | Toán phổ thông, lý thuyết | Lập trình thi đấu |
 
+
+## <b>Số Delannoy</b>
+
+### Khái niệm
+
+Số Delannoy, ký hiệu là $D(m, n)$, đếm số lượng đường đi từ điểm góc $(0, 0)$ đến điểm $(m, n)$ trên lưới tọa độ Oxy, với quy tắc di chuyển chỉ được phép sử dụng 3 bước đi sau:
+
+- Đi lên (North): $(x, y) \to (x, y+1)$
+- Đi sang phải (East): $(x, y) \to (x+1, y)$
+- Đi chéo lên-phải (North-East): $(x, y) \to (x+1, y+1)$
+
+Điều này khác với bài toán đường đi cơ bản (chỉ lên và sang phải - liên quan đến hệ số nhị thức) ở chỗ nó cho phép đi chéo.
+
+Số Delannoy trung tâm (Central Delannoy Numbers): Là trường hợp đặc biệt khi lưới là hình vuông, tức là $D(n) = D(n, n)$.
+
+### Công thức truy hồi
+
+> $D(m, n) = D(m-1, n) + D(m, n-1) + D(m-1, n-1)$
+{: .prompt-info }
+
+- $D(0, 0) = 1$
+- $D(k, 0) = D(0, k) = 1$ ($k$ là biên)
+- Độ phức tạp: $O(m \times n)$.
+
+### Công thức tổ hợp
+
+Giả sử ta thực hiện $k$ bước đi chéo: $\quad(k \in [0, min(m, n)])\quad$
+- Số bước chéo: $k$
+- Số bước lên: $m - k$
+- Số bước lên: $n - k$
+
+$\Rightarrow \quad$ Tổng số bước đi: $m + n - k$
+
+$$D(m, n) = \sum_{k=0}^{\min(m,n)} \frac{(m + n - k)!}{k!(m-k)!(n-k)!}$$
+
+- Độ phức tạp: $O(\min(m, n))$.
+
+> Ở trên là đi từ $(0, 0) \to (m, n)$, nếu bài toán là $(i, j) \to (m, n)$ thì cần biến đổi
+{: .prompt-warning }
 
 ## <b>Định lý Dilworth</b> (bài toán lồng nhau, ...)
 
