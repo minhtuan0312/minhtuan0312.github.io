@@ -215,12 +215,12 @@ struct matrix {
     int n;
     vector<vector<ll>> f;
     matrix(int n) : n(n), f(n, vector<ll>(n, 0)) {}
-    matrix identity() const {
+    matrix identity() {
         matrix res(n);
         FOR(i, 0, n) res.f[i][i] = 1;
         return res;
     }
-    matrix operator * (const matrix &other) const {
+    matrix operator * (const matrix &other) {
         matrix res(n);
         FOR(i, 0, n) {
             FOR(k, 0, n) {
@@ -233,7 +233,7 @@ struct matrix {
         }
         return res;
     }
-    matrix operator ^ (ll b) const {
+    matrix operator ^ (ll b) {
         matrix res = identity();
         matrix a = (*this);
         while(b) {
