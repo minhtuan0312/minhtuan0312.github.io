@@ -214,6 +214,7 @@ struct disjoint_set_union_rollback{
 struct matrix {
     int n;
     vector<vector<ll>> f;
+    matrix() {}
     matrix(int n) : n(n), f(n, vector<ll>(n, 0)) {}
     matrix identity() {
         matrix res(n);
