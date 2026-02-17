@@ -12,7 +12,7 @@ struct easy_segment_tree{
     int n;
     vector<ll> st;
     easy_segment_tree() {}
-    easy_segment_tree(int a) : n(a), st((n << 1) + 5) {}
+    easy_segment_tree(int n) : n(n), st(n << 1 | 1) {}
 
     void update(int idx, ll val) {
         idx--;
@@ -41,7 +41,7 @@ struct segment_tree {
     int n;
     vector<ll> st;
     segment_tree() {}
-    segment_tree(int a): n(a), st(n << 2) {}
+    segment_tree(int n): n(n), st(n << 2) {}
     
     void upd(int v, int l, int r, int idx, ll val) {
         if(l == r) {
@@ -74,7 +74,7 @@ struct fenwick_tree {
     int n;
     vector<ll> BIT;
     fenwick_tree() {}
-    fenwick_tree(int a): n(a), BIT(n + 1) {}
+    fenwick_tree(int n): n(n), BIT(n + 1) {}
     void upd(int idx, ll val) {
         for(; idx <= n; idx += (idx & -idx)) {
             BIT[idx] += val;
@@ -96,7 +96,7 @@ struct suffix_fenwick_tree {
     int n;
     vector<ll> BIT;
     suffix_fenwick_tree() {}
-    suffix_fenwick_tree(int a): n(a), BIT(n + 1) {}
+    suffix_fenwick_tree(int n): n(n), BIT(n + 1) {}
     void upd(int idx, ll val) {
         for(; idx; idx -= (idx & -idx)) {
             BIT[idx] += val;
@@ -118,10 +118,10 @@ struct disjoint_set_union{
     vector<int> parent, sz;
     int comps;
     disjoint_set_union() {}
-    disjoint_set_union(int a) : parent(a + 1) {
-        sz.assign(a + 1, 1);
+    disjoint_set_union(int n) : parent(n + 1) {
+        sz.assign(n + 1, 1);
         iota(all(parent), 0);
-        comps = a;
+        comps = n;
     }
 
     int Find(int u) {
@@ -214,7 +214,7 @@ struct disjoint_set_union_rollback{
 struct matrix {
     int n;
     vector<vector<ll>> f;
-    matrix(int a) : n(a), f(n, vector<ll>(n, 0)) {}
+    matrix(int n) : n(n), f(n, vector<ll>(n, 0)) {}
     matrix identity() const {
         matrix res(n);
         FOR(i, 0, n) res.f[i][i] = 1;
