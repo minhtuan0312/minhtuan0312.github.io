@@ -83,11 +83,11 @@ ll compute(ll n) {
 // a ^ b < 0: trái dấu
 
 ll floor_div(ll a, ll b) {
-    return a / b - ((a % b != 0) & ((a ^ b) < 0));
+    return a / b - ((a % b != 0) & ((a ^ b) < 0)); // làm tròn xuống
 }
 
 ll ceil_div(ll a, ll b) {
-    return a / b + ((a % b != 0) & ((a ^ b) >= 0));
+    return a / b + ((a % b != 0) & ((a ^ b) >= 0)); // làm tròn lên
 }
 ```
 
