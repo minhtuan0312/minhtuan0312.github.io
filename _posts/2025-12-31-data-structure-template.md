@@ -68,6 +68,61 @@ struct segment_tree {
 };
 ```
 
+## Segment Tree Lazy Update
+
+```c++
+struct segment_tree {
+    int n;
+    vector<ll> st;
+    vector<ll> lazy;
+    segment_tree() {}
+    segment_tree(int n): n(n), st(n << 2), lazy(n << 2) {}
+    //đẩy nợ từ cha xuống 2 con
+    void push(int v, int l, int r) {
+        if (lazy[v] != 0) {
+            int m = (l + r) >> 1;
+            // cập nhật giá trị cho 2 con
+            st[v << 1] += lazy[v] * (m - l + 1);
+            st[v << 1 | 1] += lazy[v] * (r - m);
+            // truyền nợ xuống 2 con
+            lazy[v << 1] += lazy[v];
+            lazy[v << 1 | 1] += lazy[v];
+            // trả hết nợ ở hiện tại
+            lazy[v] = 0;
+        }
+    }
+    void upd(int v, int l, int r, int ql, int qr, ll val) {
+        if (ql > qr) return;
+        if (l == ql && r == qr) {
+            st[v] += val * (r - l + 1); // cập nhật giá trị cho nốt cha
+            lazy[v] += val; // ghi nợ cho nốt cha để lúc đó truyền xuống cho nốt con
+            return;
+        }
+        push(v, l, r);
+        int m = (l + r) >> 1;
+        upd(v << 1, l, m, ql, min(qr, m), val);
+        upd(v << 1 | 1, m + 1, r, max(ql, m + 1), qr, val);
+        st[v] = st[v << 1] + st[v << 1 | 1];
+    }
+    ll query(int v, int l, int r, int ql, int qr) {
+        if (ql > qr) return 0;
+        if (l == ql && r == qr) return st[v];
+        push(v, l, r);
+        int m = (l + r) >> 1;
+        ll q1 = query(v << 1, l, m, ql, min(m, qr));
+        ll q2 = query(v << 1 | 1, m + 1, r, max(ql, m + 1), qr);
+        return q1 + q2;
+    }
+};
+```
+
+| Tính chất truy vấn | Logic cập nhật trọn vẹn (`ql <= l && r <= qr`) | Logic hàm `push(v, l, r)` |
+|-------------------|-----------------------------------------------|----------------------------|
+| **Cộng đoạn, tìm Tổng** | `st[v] += val * len;`  <br>`lazy[v] += val;` | Cần nhân độ dài đoạn: <br>`st[child] += lazy[v] * child_len;` <br>`lazy[child] += lazy[v];` |
+| **Cộng đoạn, tìm Max/Min** | `st[v] += val;` <br>`lazy[v] += val;` | Max/Min của đoạn tăng bao nhiêu thì<br> đoạn đó tăng bấy nhiêu (không nhân độ dài): <br>`st[child] += lazy[v];` <br>`lazy[child] += lazy[v];` |
+| **Gán đoạn bằng giá trị mới, <br>tìm Max/Min/Tổng** | `st[v] = val * len; // hoặc = val nếu tìm Max` <br>`lazy[v] = val;` | Xóa nợ cũ hoàn toàn, <br>ghi đè nợ mới: <br>`st[child] = lazy[v] * child_len;` <br>`lazy[child] = lazy[v];` |
+
+
 ## Fenwick tree (1-based)
 ```c++
 struct fenwick_tree {
