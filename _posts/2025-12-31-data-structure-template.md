@@ -116,11 +116,11 @@ struct segment_tree {
 };
 ```
 
-| Tính chất truy vấn | Logic cập nhật trọn vẹn (`ql <= l && r <= qr`) | Logic hàm `push(v, l, r)` |
+| Tính chất truy vấn | Logic cập nhật trọn vẹn | Logic hàm `push(v, l, r)` |
 |-------------------|-----------------------------------------------|----------------------------|
 | **Cộng đoạn, tìm Tổng** | `st[v] += val * len;`  <br>`lazy[v] += val;` | Cần nhân độ dài đoạn: <br>`st[child] += lazy[v] * child_len;` <br>`lazy[child] += lazy[v];` |
-| **Cộng đoạn, tìm Max/Min** | `st[v] += val;` <br>`lazy[v] += val;` | Max/Min của đoạn tăng bao nhiêu thì<br> đoạn đó tăng bấy nhiêu (không nhân độ dài): <br>`st[child] += lazy[v];` <br>`lazy[child] += lazy[v];` |
-| **Gán đoạn bằng giá trị mới, <br>tìm Max/Min/Tổng** | `st[v] = val * len; // hoặc = val nếu tìm Max` <br>`lazy[v] = val;` | Xóa nợ cũ hoàn toàn, <br>ghi đè nợ mới: <br>`st[child] = lazy[v] * child_len;` <br>`lazy[child] = lazy[v];` |
+| **Cộng đoạn, tìm Max/Min** | `st[v] += val;` <br>`lazy[v] += val;` | Max/Min của đoạn tăng bao nhiêu thì<br> đoạn đó tăng bấy nhiêu<br>(không nhân độ dài → không truyền l, r): <br>`st[child] += lazy[v];` <br>`lazy[child] += lazy[v];` |
+| **Gán đoạn bằng giá trị mới, <br>tìm Max/Min/Tổng** | `st[v] = val * len; (tổng)`<br>`st[v] = val; (max/min)` <br>`lazy[v] = val;` | Xóa nợ cũ hoàn toàn, <br>ghi đè nợ mới: <br>`st[child] = lazy[v] * child_len; (tổng)`<br>`st[child] = lazy[v]; (min/max)`<br>`lazy[child] = lazy[v];` |
 
 
 ## Fenwick tree (1-based)
