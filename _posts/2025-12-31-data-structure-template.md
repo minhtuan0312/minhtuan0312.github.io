@@ -42,7 +42,16 @@ struct segment_tree {
     vector<ll> st;
     segment_tree() {}
     segment_tree(int n): n(n), st(n << 2) {}
-    
+    void build(int v, int l, int r, int A[]) {
+        if(l == r) {
+            st[v] = A[l];
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(v << 1, l, m, A);
+        build(v << 1 | 1, m + 1, r, A);
+        st[v] = st[v << 1] + st[v << 1 | 1];
+    }
     void upd(int v, int l, int r, int idx, ll val) {
         if(l == r) {
             st[v] = val;
@@ -77,6 +86,16 @@ struct segment_tree {
     vector<ll> st, lazy;
     segment_tree() {}
     segment_tree(int n): n(n), st(n << 2), lazy(n << 2, NO_LAZY) {}
+    void build(int v, int l, int r, int A[]) {
+        if(l == r) {
+            st[v] = A[l];
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(v << 1, l, m, A);
+        build(v << 1 | 1, m + 1, r, A);
+        st[v] = st[v << 1] + st[v << 1 | 1];
+    }
     //đẩy nợ từ cha xuống 2 con
     void push(int v, int l, int r) {
         if (lazy[v] == NO_LAZY) return;
