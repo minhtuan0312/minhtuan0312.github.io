@@ -71,7 +71,7 @@ struct segment_tree {
 ## Segment Tree Lazy Update
 
 ```c++
-const int NO_LAZY = 0; 
+const ll NO_LAZY = 0; 
 struct segment_tree {
     int n;
     vector<ll> st, lazy;
