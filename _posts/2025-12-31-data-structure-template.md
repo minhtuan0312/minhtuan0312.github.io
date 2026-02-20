@@ -282,12 +282,12 @@ struct suffix_fenwick_tree {
 ## Disjoint set union (1-based)
 ```c++
 struct disjoint_set_union{
-    vector<int> parent, sz;
+    int n;
+    vector<int> parent, sz_;
     int comps;
     disjoint_set_union() {}
-    disjoint_set_union(int n) : parent(n + 1) {
-        sz.assign(n + 1, 1);
-        iota(all(parent), 0);
+    disjoint_set_union(int n): n(n), parent(n + 1), assign(n + 1, 1) {
+        FOR(i, 1, n + 1) parent[i] = i;
         comps = n;
     }
 
@@ -300,9 +300,9 @@ struct disjoint_set_union{
         u = Find(u);
         v = Find(v);
         if(u == v) return 0;
-        if(sz[u] < sz[v]) swap(u, v);
+        if(sz_[u] < sz_[v]) swap(u, v);
         parent[v] = u;
-        sz[u] += sz[v];
+        sz_[u] += sz_[v];
         comps--;
         return 1;
     }
@@ -318,10 +318,10 @@ struct data_structure{
     }
     ...
     int Snapshot() {
-        return sz(st);
+        return sz_(st);
     }
     void Rollback(int snap) {
-        while(sz(st) > snap) {
+        while(sz_(st) > snap) {
             *st.back().first = st.back().second;
             st.pop_back();
         }
@@ -333,12 +333,12 @@ struct data_structure{
 
 ```c++
 struct disjoint_set_union_rollback{
-    vector<int> parent, sz;
+    int n;
+    vector<int> parent, sz_;
     int comps;
     disjoint_set_union_rollback() {}
-    disjoint_set_union_rollback(int n) : parent(n + 1) {
+    disjoint_set_union_rollback(int n) : n(n), parent(n + 1), sz_(n + 1, 1) {
         FOR(i, 1, n + 1) parent[i] = i;
-        sz.assign(n + 1, 1);
         comps = n;
     }
     vector<pair<int*, int>> st;
@@ -353,22 +353,22 @@ struct disjoint_set_union_rollback{
         u = Find(u);
         v = Find(v);
         if(u == v) return 0;
-        if(sz[u] < sz[v]) swap(u, v);
+        if(sz_[u] < sz_[v]) swap(u, v);
 
         Save(parent[v]);
-        Save(sz[u]);
+        Save(sz_[u]);
         Save(comps);
 
-        sz[u] += sz[v];
+        sz_[u] += sz_[v];
         parent[v] = u;
         comps--;
         return 1;
     }
     int Snapshot() {
-        return sz(st);
+        return sz_(st);
     }
     void Rollback(int snap) {
-        while(sz(st) > snap) {
+        while(sz_(st) > snap) {
             *st.back().first = st.back().second;
             st.pop_back();
         }
