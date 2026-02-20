@@ -140,6 +140,101 @@ struct segment_tree {
 | **Cộng đoạn, tìm Max/Min** | `st[v] += val;` <br>`lazy[v] += val;` | Max/Min của đoạn tăng bao nhiêu thì<br> đoạn đó tăng bấy nhiêu<br>(không nhân độ dài → không truyền l, r): <br>`st[child] += lazy[v];` <br>`lazy[child] += lazy[v];` |
 | **Gán đoạn bằng giá trị mới, <br>tìm Max/Min/Tổng** | `st[v] = val * len; (tổng)`<br>`st[v] = val; (max/min)` <br>`lazy[v] = val;` | Xóa nợ cũ hoàn toàn, <br>ghi đè nợ mới: <br>`st[child] = lazy[v] * len; (tổng)`<br>`st[child] = lazy[v]; (min/max)`<br>`lazy[child] = lazy[v];`<br> *Đối với min/max thì xóa nợ phải sử dụng<br>`const ll NO_LAZY = -1e18 - 7;` |
 
+> <b>Một tính chất quan trọng cần biết để tối ưu:</b> Nút gốc st[1] quản lý toàn bộ mảng từ [1, n]
+{: .prompt-info }
+
+<b>Kinh nghiệm:</b> Với các bài toán "đảo ngược" (switch/flip/invert), hãy luôn nghĩ đến việc lưu cả giá trị hiện tại và giá trị sau khi đảo (như lis và lds) để việc cập nhật chỉ tốn một phép swap.
+
+<div class="problem-link">
+  🔗 <strong>Ví dụ:</strong>
+  <a href="https://codeforces.com/problemset/problem/145/E" target="_blank">
+    E. Lucky Queries
+  </a>
+</div>
+
+```c++
+struct Node {
+    int c4, c7, lis, lds;
+    Node() : c4(0), c7(0), lis(0), lds(0) {}
+};
+Node Merge(const Node &l, const Node &r) {
+    Node res;
+    res.c4 = l.c4 + r.c4;
+    res.c7 = l.c7 + r.c7;
+    res.lis = max(l.c4 + r.lis, l.lis + r.c7);
+    res.lds = max(l.c7 + r.lds, l.lds + r.c4);
+    return res;
+}
+const ll NO_LAZY = 0;
+struct segment_tree {
+    int n;
+    vector<Node> st;
+    vector<bool> lazy;
+    segment_tree() {}
+    segment_tree(int n): n(n), st(n << 2), lazy(n << 2, NO_LAZY) {}
+    void apply(int v) {
+        swap(st[v].c4, st[v].c7);
+        swap(st[v].lis, st[v].lds);
+        lazy[v] = !lazy[v];
+    }
+    void push(int v, int l, int r) {
+        if(lazy[v] == NO_LAZY) return;
+        apply(v << 1);
+        apply(v << 1 | 1);
+        lazy[v] = 0;
+    }
+    void build(int v, int l, int r, const string &A) {
+        if (l == r) {
+            st[v].c4 += A[l] == '4';
+            st[v].c7 += A[l] == '7';
+            st[v].lis = st[v].lds = 1;
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(v << 1, l, m, A);
+        build(v << 1 | 1, m + 1, r, A);
+        st[v] = Merge(st[v << 1], st[v << 1 | 1]);
+    }
+    void upd(int v, int l, int r, int ql, int qr) {
+        if (ql > qr) return;
+        if (l == ql && r == qr) {
+            apply(v);
+            return;
+        }
+        push(v, l, r);
+        int m = (l + r) >> 1;
+        upd(v << 1, l, m, ql, min(qr, m));
+        upd(v << 1 | 1, m + 1, r, max(ql, m + 1), qr);
+        st[v] = Merge(st[v << 1], st[v << 1 | 1]);
+    }
+    Node query(int v, int l, int r, int ql, int qr) {
+        if (ql > qr) return Node();
+        if (l == ql && r == qr) return st[v];
+        push(v, l, r);
+        int m = (l + r) >> 1;
+        Node q1 = query(v << 1, l, m, ql, min(m, qr));
+        Node q2 = query(v << 1 | 1, m + 1, r, max(ql, m + 1), qr);
+        return Merge(q1, q2);
+    }
+};
+int main(void) {
+    int n, m; cin >> n >> m;
+    string s; cin >> s;
+    s = ' ' + s;
+    segment_tree seg(n);
+    seg.build(1, 1, n, s);
+    while(m--) {
+        string op; cin >> op;
+        if(op[0] == 's') { // so sánh kí tự sẽ tối ưu hơn nguyên xâu
+            int l, r; cin >> l >> r;
+            seg.upd(1, 1, n, l, r);
+        } else {
+            cout << seg.st[1].lis << nl; // thay vì "seg.query(1, 1, n, 1, n).lis"
+        }
+    }
+}
+```
+
 ## Fenwick tree (1-based)
 ```c++
 struct fenwick_tree {
