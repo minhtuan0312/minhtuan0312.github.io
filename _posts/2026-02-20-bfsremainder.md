@@ -69,28 +69,41 @@ $\Rightarrow$ Độ phức tạp thời gian giảm xuống chỉ còn $O(n)$ th
 ### <b>VI. Mã giải</b>
 
 ```c++
-void bfs() {
+const int limN = 20000 + 5;
+int visited[limN];
+int trace[limN];
+int digit[limN];
+int session = 0; // trick tối ưu bộ nhớ thay vì cứ phải memset mỗi testcase
+void solve() {
+    session++;
     int n; cin >> n;
-    if(1 % n == 0) return cout << 1 << nl, void(); // trường hợp cơ sở nhất
-    queue<pair<int, string>> qu; // queue lưu trữ pair<số dư, chuỗi biểu diễn>
-    bool visited[n + 1] = {0};
-    qu.push({1 % n, "1"});
-    visited[1 % n] = 1;
+    queue<int> qu;
+    int start_r = 1 % n;
+    if(start_r == 0) return cout << 1 << nl, void();
+    visited[start_r] = session;
+    trace[start_r] = -1; // ko có cha
+    digit[start_r] = 1;
+    qu.push(start_r);
     while(!qu.empty()) {
-        auto [r, s] = qu.front(); qu.pop();
-        if(r == 0) {
-            return cout << s << nl, void();
-        }
-        int r0 = (r * 10 + 0) % n; // thêm '0'
-        if(!visited[r0]) {
-            visited[r0] = 1;
-            qu.push({r0, s + "0"});
-        }
-        int r1 = (r * 10 + 1) % n; // thêm '1'
-        if(!visited[r1]) {
-            visited[r1] = 1;
-            qu.push({r1, s + "1"});
+        int r = qu.front(); qu.pop();
+        if(r == 0) break; // tìm thấy số nhỏ nhất chia hết cho n
+        for(const int &k: {0, 1}) {
+            int nr = (r * 10 + k) % n;
+            if(visited[nr] != session) {
+                visited[nr] = session;
+                trace[nr] = r;
+                digit[nr] = k;
+                qu.push(nr);
+            }
         }
     }
+    int last = 0;
+    string res;
+    while(last != -1) {
+        res.pb(char('0' + digit[last]));
+        last = trace[last];
+    }
+    reverse(all(res));
+    cout << res << nl;
 }
 ```
