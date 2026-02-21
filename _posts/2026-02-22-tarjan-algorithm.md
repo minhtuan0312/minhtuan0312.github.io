@@ -3,6 +3,8 @@ layout: post
 title: Thuật toán Tarjan🏝️
 date: 2026-02-22 01:06 +0700
 math: true
+categories: [graph]
+tags: [thuật toán tarjan, khớp và cầu, nén đồ thị, 2sat, đỉnh nguồn & đỉnh trũng]
 ---
 
 ![Tarjan Demo](/assets/img/tarjan.gif)
