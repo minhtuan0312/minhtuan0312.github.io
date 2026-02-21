@@ -134,13 +134,27 @@ Ví dụ: Nếu đề bài yêu cầu "Tìm số lượng học sinh lớn nhấ
 
 ## <b>Khớp và cầu</b>
 
+### <b>0. Định nghĩa</b>
+
+- Trong đồ thị vô hướng, một đỉnh được gọi là đỉnh khớp nếu như loại bỏ đỉnh này và các cạnh liên thuộc với nó ra khỏi đồ thị thì số thành phần liên thông của đồ thị tăng lên.
+
+- Trong đồ thị vô hướng, một cạnh được gọi là cạnh cầu nếu như loại bỏ cạnh này ra khỏi đồ thị thì số thành phần liên thông của đồ thị tăng lên.
+
 ### <b>1. Khớp</b>
+
+<b>Nguyên lý hoạt động:</b>
+
+- <b>disc[u]</b> (Discovery time): Thời điểm bắt đầu thăm đỉnh $u$.
+- <b>low[u]:</b> Thời điểm thăm nhỏ nhất của một đỉnh mà từ $u$ (hoặc từ con cháu của $u$ trong cây DFS) có thể đi tới qua <b>tối đa một cạnh ngược</b>.
+- <b>Điều kiện 1:</b> Nếu $u$ là gốc của cây DFS và có nhiều hơn 1 nhánh con độc lập `(child > 1)`, $u$ là khớp.
+- <b>Điều kiện 2:</b> Nếu $u$ không phải gốc và tồn tại một nhánh con $v$ sao cho `disc[u] <= low[v]` (tức là từ $v$ không có cách nào vòng ngược lên được tổ tiên của $u$), thì $u$ là khớp.
+
 ```c++
 const int limN = 1005;
 vector<int> adj[limN];
 int n, m;
 int disc[limN], low[limN];
-set<int> ap;
+set<int> ap; // lưu các khớp, dùng set để tránh trùng lặp
 int time_ = 0;
 void dfs(int u, int par) {
     disc[u] = low[u] = ++time_;
@@ -151,16 +165,17 @@ void dfs(int u, int par) {
         if(disc[v] == 0) {
             child++;
             dfs(v, u);
-            minimize(low[u], low[v]);
-            if(disc[u] <= low[v] && par != -1) {
+            minimize(low[u], low[v]); // cập nhật low[u] từ con v
+            if(disc[u] <= low[v] && par != -1) { // điều kiện khớp cho các đỉnh không phải là gốc của cây DFS
                 ap.insert(u);
             }
         } else {
+            // cập nhật low[u] qua cạnh ngược (back-edge)
             minimize(low[u], disc[v]);
         }
     }
 
-    if(par == -1 && child > 1) { // đỉnh dfs tree
+    if(par == -1 && child > 1) { // điều kiện khớp cho đỉnh gốc của cây DFS
         ap.insert(u);
     }
 }
@@ -179,6 +194,10 @@ int main(void) {
 ```
 
 ### <b>2. Cầu</b>
+
+<b>Nguyên lý hoạt động:</b>
+
+- Cạnh $(u, v)$ là cầu khi và chỉ khi từ nhánh con $v$ không có bất kỳ cạnh ngược nào nối về $u$ hoặc các tổ tiên của $u$. Điều này tương đương với điều kiện `disc[u] < low[v]`.
 
 ```c++
 const int limN = 1005;
