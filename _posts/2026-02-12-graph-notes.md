@@ -132,112 +132,84 @@ Trong đó `Kích thước cặp ghép cực đại` (size of maximum matching) 
 
 Ví dụ: Nếu đề bài yêu cầu "Tìm số lượng học sinh lớn nhất sao cho không có 2 học sinh nào từng quen nhau", thực chất đó là bài toán tìm <b>Tập độc lập cực đại</b>. Bạn chỉ cần tìm Cặp ghép cực đại, sau đó lấy tổng số đỉnh trừ đi là xong
 
-## <b>Khớp và cầu</b>
+## <b>Quy hoạch động trên DAG</b>
 
-### <b>0. Định nghĩa</b>
-
-- Trong đồ thị vô hướng, một đỉnh được gọi là đỉnh khớp nếu như loại bỏ đỉnh này và các cạnh liên thuộc với nó ra khỏi đồ thị thì số thành phần liên thông của đồ thị tăng lên.
-
-- Trong đồ thị vô hướng, một cạnh được gọi là cạnh cầu nếu như loại bỏ cạnh này ra khỏi đồ thị thì số thành phần liên thông của đồ thị tăng lên.
-
-### <b>1. Khớp</b>
-
-<b>Nguyên lý hoạt động:</b>
-
-- <b>disc[u]</b> (Discovery time): Thời điểm bắt đầu thăm đỉnh $u$.
-- <b>low[u]:</b> Thời điểm thăm nhỏ nhất của một đỉnh mà từ $u$ (hoặc từ con cháu của $u$ trong cây DFS) có thể đi tới qua <b>tối đa một cạnh ngược</b>.
-- <b>Điều kiện 1:</b> Nếu $u$ là gốc của cây DFS và có nhiều hơn 1 nhánh con độc lập `(child > 1)`, $u$ là khớp.
-- <b>Điều kiện 2:</b> Nếu $u$ không phải gốc và tồn tại một nhánh con $v$ sao cho `disc[u] <= low[v]` (tức là từ $v$ không có cách nào vòng ngược lên được tổ tiên của $u$), thì $u$ là khớp.
+### <b>Push DP sử dụng thuật toán Kahn</b>
 
 ```c++
-const int limN = 1005;
-vector<int> adj[limN];
 int n, m;
-int disc[limN], low[limN];
-set<int> ap; // lưu các khớp, dùng set để tránh trùng lặp
-int time_ = 0;
-void dfs(int u, int par) {
-    disc[u] = low[u] = ++time_;
-    int child = 0;
-
-    for(const auto &v : adj[u]) {
-        if(v == par) continue;
-        if(disc[v] == 0) {
-            child++;
-            dfs(v, u);
-            minimize(low[u], low[v]); // cập nhật low[u] từ con v
-            if(disc[u] <= low[v] && par != -1) { // điều kiện khớp cho các đỉnh không phải là gốc của cây DFS
-                ap.insert(u);
-            }
-        } else {
-            // cập nhật low[u] qua cạnh ngược (back-edge)
-            minimize(low[u], disc[v]);
+const int limN = 2e5 + 5;
+vector<int> adj[limN];
+int in_deg[limN], dp[limN];
+int kahn() {
+    int indeg[limN];
+    memcpy(indeg, in_deg, sizeof in_deg);
+    queue<int> qu;
+    FOR(u, 1, n + 1) {
+        if (!indeg[u]) {
+            qu.push(u);
+            dp[u] = 0; // Base case: Đường đi ngắn nhất từ u là 0 (chính nó)
         }
     }
-
-    if(par == -1 && child > 1) { // điều kiện khớp cho đỉnh gốc của cây DFS
-        ap.insert(u);
+    int res = 0;
+    while (!qu.empty()) {
+        int u = qu.front(); qu.pop();
+        for (const int& v : adj[u]) {
+            // Push: Đỉnh u đã tối ưu, update giá trị cho đỉnh con v
+            maximize(dp[v], dp[u] + 1);
+            maximize(res, dp[v]);
+            if (--indeg[v] == 0) qu.push(v);
+        }
     }
+    return res;
 }
 int main(void) {
     cin >> n >> m;
     FOR(i, 1, m + 1) {
         int u, v; cin >> u >> v;
         adj[u].eb(v);
-        adj[v].eb(u);
+        in_deg[v]++;
     }
-    FOR(i, 1, n + 1) {
-        if(disc[i] == 0) dfs(i, -1);
-    }
-    cout << sz(ap);
+    cout << kahn();
 }
 ```
 
-### <b>2. Cầu</b>
+### <b>Pull DP sử dụng DFS</b>
 
-<b>Nguyên lý hoạt động:</b>
-
-- Cạnh $(u, v)$ là cầu khi và chỉ khi từ nhánh con $v$ không có bất kỳ cạnh ngược nào nối về $u$ hoặc các tổ tiên của $u$. Điều này tương đương với điều kiện `disc[u] < low[v]`.
+- Không an toàn nếu $n \ge 10^5$, thay vào đó sử dụng `push DP`.
 
 ```c++
-const int limN = 1005;
 int n, m;
+const int limN = 2e5 + 5;
 vector<int> adj[limN];
-int disc[limN], low[limN];
-int time_ = 0;
-vector<pair<int, int>>bridges;
-
-void dfs(int u, int par) {
-    disc[u] = low[u] = ++time_;
-    for(const auto &v: adj[u]) {
-        if(v == par) continue;
-        if(disc[v] == 0) {
-            dfs(v, u);
-            minimize(low[u], low[v]);
-            if(disc[u] < low[v]) {
-                bridges.eb(u, v);
-            }
-        } else {
-            minimize(low[u], disc[v]);
-        }
+int dp[limN];
+int dfs(int u) {
+    if (dp[u] != -1) return dp[u];
+    dp[u] = 0; // Base case: Đường đi ngắn nhất từ u là 0 (chính nó)
+    for (const int& v : adj[u]) {
+        // Pull: Lấy giá trị tốt nhất từ các đỉnh con v
+        maximize(dp[u], dfs(v) + 1);
     }
+    return dp[u];
 }
 int main(void) {
     cin >> n >> m;
     FOR(i, 1, m + 1) {
         int u, v; cin >> u >> v;
         adj[u].eb(v);
-        adj[v].eb(u);
     }
-
-    FOR(i, 1, n + 1) {
-        if(disc[i] == 0) {
-            dfs(i, -1);
-        }
+    memset(dp, -1, sizeof(dp));
+    int res = 0;
+    FOR(u, 1, n + 1) {
+        maximize(res, dfs(u));
     }
-    cout << sz(bridges);
+    cout << res;
 }
 ```
+
+## <b>Thuật toán Tarjan</b>
+
+Phần này đã được tách thành blog mới
 
 ## <b>Cây khung cực tiểu (Minimum Spanning Tree)</b>
 
@@ -291,7 +263,7 @@ vector<pair<int, int>> adj[limN];
 void prim(int s) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> Q;
     used[s] = 1;
-    for(const auto &v: adj[s]) {
+    for(const int &v: adj[s]) {
         Q.push({v.se, v.fi});
     }
     ll d = 0, dem = 0;
@@ -301,7 +273,7 @@ void prim(int s) {
             d += w;
             dem++;
             used[u] = 1;
-            for(const auto &v: adj[u]) {
+            for(const int &v: adj[u]) {
                 if(used[v.fi] == 0) {
                     Q.push({v.se, v.fi});
                 }
@@ -568,81 +540,6 @@ int main(void) {
     FOR(i, 1, n + 1) {
         cout << dist[s][i] << ' ';
     }
-}
-```
-
-## <b>Quy hoạch động trên DAG</b>
-
-### <b>Push DP sử dụng thuật toán Kahn</b>
-
-```c++
-int n, m;
-const int limN = 2e5 + 5;
-vector<int> adj[limN];
-int deg_in[limN], dp[limN];
-int kahn() {
-    int indeg[limN];
-    memcpy(indeg, deg_in, sizeof deg_in);
-    queue<int> qu;
-    FOR(u, 1, n + 1) {
-        if (!indeg[u]) {
-            qu.push(u);
-            dp[u] = 0; // Base case: Đường đi ngắn nhất từ u là 0 (chính nó)
-        }
-    }
-    int res = 0;
-    while (!qu.empty()) {
-        int u = qu.front(); qu.pop();
-        for (const int& v : adj[u]) {
-            // Push: Đỉnh u đã tối ưu, update giá trị cho đỉnh con v
-            maximize(dp[v], dp[u] + 1);
-            maximize(res, dp[v]);
-            if (--indeg[v] == 0) qu.push(v);
-        }
-    }
-    return res;
-}
-int main(void) {
-    cin >> n >> m;
-    FOR(i, 1, m + 1) {
-        int u, v; cin >> u >> v;
-        adj[u].eb(v);
-        deg_in[v]++;
-    }
-    cout << kahn();
-}
-```
-
-### <b>Pull DP sử dụng DFS</b>
-
-- Không an toàn nếu $n \ge 10^5$, thay vào đó sử dụng `push DP`.
-
-```c++
-int n, m;
-const int limN = 2e5 + 5;
-vector<int> adj[limN];
-int dp[limN];
-int dfs(int u) {
-    if (dp[u] != -1) return dp[u];
-    dp[u] = 0; // Base case: Đường đi ngắn nhất từ u là 0 (chính nó)
-    for (const int& v : adj[u]) {
-        // Pull: Lấy giá trị tốt nhất từ các đỉnh con v
-        maximize(dp[u], dfs(v) + 1);
-    }
-    return dp[u];
-}
-int main(void) {
-    cin >> n >> m;
-    FOR(i, 1, m + 1) {
-        int u, v; cin >> u >> v;
-        adj[u].eb(v);
-    }
-    memset(dp, -1, sizeof(dp));
-    int res = 0;
-    FOR(u, 1, n + 1) {
-        maximize(res, dfs(u));
-    }
-    cout << res;
 }
 ```
 
