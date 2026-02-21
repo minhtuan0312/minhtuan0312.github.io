@@ -283,10 +283,11 @@ struct suffix_fenwick_tree {
 ```c++
 struct disjoint_set_union{
     int n;
-    vector<int> parent, sz_;
+    vector<int> parent, sz;
     int comps;
     disjoint_set_union() {}
-    disjoint_set_union(int n): n(n), parent(n + 1), assign(n + 1, 1) {
+    disjoint_set_union(int n): n(n), parent(n + 1) {
+        sz.assign(n + 1, 1);
         FOR(i, 1, n + 1) parent[i] = i;
         comps = n;
     }
@@ -300,9 +301,9 @@ struct disjoint_set_union{
         u = Find(u);
         v = Find(v);
         if(u == v) return 0;
-        if(sz_[u] < sz_[v]) swap(u, v);
+        if(sz[u] < sz[v]) swap(u, v);
         parent[v] = u;
-        sz_[u] += sz_[v];
+        sz[u] += sz[v];
         comps--;
         return 1;
     }
@@ -318,10 +319,10 @@ struct data_structure{
     }
     ...
     int Snapshot() {
-        return sz_(st);
+        return sz(st);
     }
     void Rollback(int snap) {
-        while(sz_(st) > snap) {
+        while(sz(st) > snap) {
             *st.back().first = st.back().second;
             st.pop_back();
         }
@@ -334,10 +335,11 @@ struct data_structure{
 ```c++
 struct disjoint_set_union_rollback{
     int n;
-    vector<int> parent, sz_;
+    vector<int> parent, sz;
     int comps;
     disjoint_set_union_rollback() {}
-    disjoint_set_union_rollback(int n) : n(n), parent(n + 1), sz_(n + 1, 1) {
+    disjoint_set_union_rollback(int n) : n(n), parent(n + 1) {
+        sz.assign(n + 1, 1);
         FOR(i, 1, n + 1) parent[i] = i;
         comps = n;
     }
@@ -353,22 +355,22 @@ struct disjoint_set_union_rollback{
         u = Find(u);
         v = Find(v);
         if(u == v) return 0;
-        if(sz_[u] < sz_[v]) swap(u, v);
+        if(sz[u] < sz[v]) swap(u, v);
 
         Save(parent[v]);
-        Save(sz_[u]);
+        Save(sz[u]);
         Save(comps);
 
-        sz_[u] += sz_[v];
+        sz[u] += sz[v];
         parent[v] = u;
         comps--;
         return 1;
     }
     int Snapshot() {
-        return sz_(st);
+        return sz(st);
     }
     void Rollback(int snap) {
-        while(sz_(st) > snap) {
+        while(sz(st) > snap) {
             *st.back().first = st.back().second;
             st.pop_back();
         }

@@ -1,16 +1,15 @@
 ---
 layout: post
-title: Một số template Lý thuyết đồ thị🐧
+title: Một số template và note Lý thuyết đồ thị🐧
 date: 2026-02-12 20:25 +0700
 categories: [graph, template]
 tags: [lý thuyết đồ thị]
 math: true
 ---
 
-## Khớp và cầu
+## <b>Khớp và cầu</b>
 
-### 1. Khớp
-Setup
+### <b>1. Khớp</b>
 ```c++
 const int limN = 1005;
 vector<int> adj[limN];
@@ -40,24 +39,22 @@ void dfs(int u, int par) {
         ap.insert(u);
     }
 }
-```
-Main
-```c++
-cin >> n >> m;
-FOR(i, 1, m + 1) {
-    int u, v; cin >> u >> v;
-    adj[u].eb(v);
-    adj[v].eb(u);
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1) {
+        int u, v; cin >> u >> v;
+        adj[u].eb(v);
+        adj[v].eb(u);
+    }
+    FOR(i, 1, n + 1) {
+        if(disc[i] == 0) dfs(i, -1);
+    }
+    cout << sz(ap);
 }
-FOR(i, 1, n + 1) {
-    if(disc[i] == 0) dfs(i, -1);
-}
-cout << sz(ap);
 ```
 
-### 2. Cầu
+### <b>2. Cầu</b>
 
-Setup
 ```c++
 const int limN = 1005;
 int n, m;
@@ -81,29 +78,26 @@ void dfs(int u, int par) {
         }
     }
 }
-```
-
-Main
-```c++
-cin >> n >> m;
-FOR(i, 1, m + 1) {
-    int u, v; cin >> u >> v;
-    adj[u].eb(v);
-    adj[v].eb(u);
-}
-
-FOR(i, 1, n + 1) {
-    if(disc[i] == 0) {
-        dfs(i, -1);
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1) {
+        int u, v; cin >> u >> v;
+        adj[u].eb(v);
+        adj[v].eb(u);
     }
+
+    FOR(i, 1, n + 1) {
+        if(disc[i] == 0) {
+            dfs(i, -1);
+        }
+    }
+    cout << sz(bridges);
 }
-cout << sz(bridges);
 ```
 
-## Cây khung cực tiểu (Minimum Spanning Tree)
+## <b>Cây khung cực tiểu (Minimum Spanning Tree)</b>
 
-### Thuật toán Kruskal
-Setup
+### <b>Thuật toán Kruskal</b>
 ```c++
 int n, m;
 struct edge{
@@ -131,22 +125,19 @@ void Kruskal(){
     else cout << d;
 
 }
-```
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1) {
+        int u, v, w; cin >> u >> v >> w;
+        edges.pb({u, v, w});
+    }
 
-Main
-```c++
-cin >> n >> m;
-FOR(i, 1, m + 1) {
-    int u, v, w; cin >> u >> v >> w;
-    edges.pb({u, v, w});
+    Kruskal();
 }
-
-Kruskal();
 ```
 
-### Thuật toán Prim
+### <b>Thuật toán Prim</b>
 
-Setup
 ```c++
 const int limN = 1e5 + 5;
 int n, m;
@@ -176,23 +167,19 @@ void prim(int s) {
     if(dem == n - 1) return cout << d, void();
     return cout << "IMPOSSIBLE", void();
 }
-```
-
-Main
-```c++
-cin >> n >> m;
-FOR(i, 1, m + 1){
-    int u, v, w; cin >> u >> v >> w;
-    adj[u].eb(v, w);
-    adj[v].eb(u, w);
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1){
+        int u, v, w; cin >> u >> v >> w;
+        adj[u].eb(v, w);
+        adj[v].eb(u, w);
+    }
+    prim(1);
 }
-
-prim(1);
 ```
 
-## Tìm đường đi ngắn nhất
-### Thuật toán Dijkstra
-Setup
+## <b>Tìm đường đi ngắn nhất</b>
+### <b>Thuật toán Dijkstra</b>
 ```c++
 typedef pair<ll, int> ii;
 const int limN = 1005;
@@ -209,30 +196,28 @@ void dijkstra(int s) {
         auto [d, u] = pq.top(); pq.pop();
         if(d > dist[u]) continue;
         for(auto [v, w]: adj[u]) {
-            if(dist[v] > d + w) {
-                dist[v] = d + w;
+            if(minimize(dist[v], d + w)) {
                 pq.push({dist[v], v});
             }
         }
     }
 }
-```
-Main
-```c++
-cin >> n >> m >> s;
-FOR(i, 1, m + 1) {
-    int u, v, w; cin >> u >> v >> w;
-    adj[u].eb(v, w);
-    adj[v].eb(u, w);
-}
+int main(void) {
+    cin >> n >> m >> s;
+    FOR(i, 1, m + 1) {
+        int u, v, w; cin >> u >> v >> w;
+        adj[u].eb(v, w);
+        adj[v].eb(u, w);
+    }
 
-dijkstra(s);
-FOR(i, 1, n + 1) {
-    cout << dist[i] << ' ';
+    dijkstra(s);
+    FOR(i, 1, n + 1) {
+        cout << dist[i] << ' ';
+    }
 }
 ```
 
-### Thuật toán Dijkstra trên lưới 2D
+### <b>Thuật toán Dijkstra trên lưới 2D</b>
 
 <div class="problem-link">
   🔗 <strong>Ví dụ:</strong>
@@ -240,6 +225,7 @@ FOR(i, 1, n + 1) {
     HSG THPT TPHCM 2021 - Tìm đường
   </a>
 </div>
+
 ```c++
 const int limN = 505;
 typedef pair<ll, pair<int, int>> iii;
@@ -265,8 +251,7 @@ void dijkstra(int s, int t) {
             if(nx > 0 && ny > 0 && nx <= n && ny <= n) {
                 // relax
                 ll nd = max(dist[x][y], abs(A[nx][ny] - A[x][y]));
-                if(dist[nx][ny] > nd) {
-                    dist[nx][ny] = nd;
+                if(minimize(dist[nx][ny], nd)) {
                     pq.push({nd, {nx, ny}});
                 }
             }
@@ -276,39 +261,24 @@ void dijkstra(int s, int t) {
 }
 
 int main(void) {
-    minhtuan0312;
-
-    #define TASK ""
-    if (fopen(TASK ".inp", "r")) {
-        freopen(TASK ".inp", "r", stdin);
-        freopen(TASK ".out", "w", stdout);
-    }
-
     cin >> n;
     FOR(i, 1, n + 1) {
         FOR(j, 1, n + 1) {
             cin >> A[i][j];
         }
     }
-
     dijkstra(1, 1);
-
     cout << dist[n][n];
-
-    return (0 ^ 0);
-
 }
 ```
 
-### Thuật toán Bellman Ford
-Setup
+### <b>Thuật toán Bellman Ford</b>
 ```c++
 int const INF = 1e9 + 7;
 int const limN = 1005;
 vector<tuple<int, int, ll>> edges;
 int n, m, s;
 ll dist[limN];
-
 void bellmanford(int s) {
     memset(dist, 0x3f, sizeof dist);
     dist[s] = 0;
@@ -320,47 +290,453 @@ void bellmanford(int s) {
         }
     }
 }
-```
-
-Main
-```c++
-cin >> n >> m >> s;
-FOR(i, 1, m + 1) {
-    int u, v, w; cin >> u >> v >> w;
-    edges.pb({u, v, w});
-    edges.pb({v, u, w});
-}
-
-bellmanford(s);
-
-FOR(i, 1, n + 1) {
-    cout << dist[i] << ' ';
+int main(void) {
+    cin >> n >> m >> s;
+    FOR(i, 1, m + 1) {
+        int u, v, w; cin >> u >> v >> w;
+        edges.pb({u, v, w});
+        edges.pb({v, u, w});
+    }
+    bellmanford(s);
+    FOR(i, 1, n + 1) {
+        cout << dist[i] << ' ';
+    }
 }
 ```
 
-### Thuật toán Floyd Warshall
+### <b>Thuật toán Floyd Warshall</b>
 ```c++
 const int limN = 105;
 ll dist[limN][limN];
 
-memset(dist, 0x3f, sizeof dist);
-FOR(i, 1, limN) {
-    dist[i][i] = 0;
-}
+int main(void) {
+    memset(dist, 0x3f, sizeof dist);
+    FOR(i, 1, limN) {
+        dist[i][i] = 0;
+    }
 
-int n, m, s; cin >> n >> m >> s;
-FOR(i, 1, m + 1) {
-    int u, v, w; cin >> u >> v >> w;
-    dist[u][v] = dist[v][u] = w;
-}
-FOR(k, 1, n + 1) {
+    int n, m, s; cin >> n >> m >> s;
+    FOR(i, 1, m + 1) {
+        int u, v, w; cin >> u >> v >> w;
+        dist[u][v] = dist[v][u] = w;
+    }
+    FOR(k, 1, n + 1) {
+        FOR(i, 1, n + 1) {
+            FOR(j, 1, n + 1) {
+                minimize(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+        }
+    }
     FOR(i, 1, n + 1) {
-        FOR(j, 1, n + 1) {
-            minimize(dist[i][j], dist[i][k] + dist[k][j]);
+        cout << dist[s][i] << ' ';
+    }
+}
+```
+
+## <b>Quy hoạch động trên DAG</b>
+
+### <b>Push DP sử dụng thuật toán Kahn</b>
+
+```c++
+int n, m;
+const int limN = 2e5 + 5;
+vector<int> adj[limN];
+int deg_in[limN], dp[limN];
+int kahn() {
+    int indeg[limN];
+    memcpy(indeg, deg_in, sizeof deg_in);
+    queue<int> qu;
+    FOR(u, 1, n + 1) {
+        if (!indeg[u]) {
+            qu.push(u);
+            dp[u] = 0; // Base case: Đường đi ngắn nhất từ u là 0 (chính nó)
+        }
+    }
+    int res = 0;
+    while (!qu.empty()) {
+        int u = qu.front(); qu.pop();
+        for (const int& v : adj[u]) {
+            // Push: Đỉnh u đã tối ưu, update giá trị cho đỉnh con v
+            maximize(dp[v], dp[u] + 1);
+            maximize(res, dp[v]);
+            if (--indeg[v] == 0) qu.push(v);
+        }
+    }
+    return res;
+}
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1) {
+        int u, v; cin >> u >> v;
+        adj[u].eb(v);
+        deg_in[v]++;
+    }
+    cout << kahn();
+}
+```
+
+### <b>Pull DP sử dụng DFS</b>
+
+```c++
+int n, m;
+const int limN = 2e5 + 5;
+vector<int> adj[limN];
+int dp[limN];
+int dfs(int u) {
+    if (dp[u] != -1) return dp[u];
+    dp[u] = 0; // Base case: Đường đi ngắn nhất từ u là 0 (chính nó)
+    for (const int& v : adj[u]) {
+        // Pull: Lấy giá trị tốt nhất từ các đỉnh con v
+        maximize(dp[u], dfs(v) + 1);
+    }
+    return dp[u];
+}
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1) {
+        int u, v; cin >> u >> v;
+        adj[u].eb(v);
+    }
+    memset(dp, -1, sizeof(dp));
+    int res = 0;
+    FOR(u, 1, n + 1) {
+        maximize(res, dfs(u));
+    }
+    cout << res;
+}
+```
+
+## <b>Cây</b>
+
+### <b>1. Khái niệm về cây</b>
+
+1. Trong lý thuyết đồ thị, cây có các thuộc tính sau: 
+- Là một đồ thị vô hướng gồm $V$ đỉnh và $V-1$ cạnh
+- Liên thông 
+- Không có chu trình
+2. Giữa hai đỉnh bất kỳ trong cây luôn có <b>duy nhất một đường đi đơn</b>.
+3. Nếu thêm một cạnh bất kỳ vào cây, ta sẽ tạo ra đúng một chu trình.
+4. Nếu xóa đi một cạnh bất kỳ, đồ thị sẽ mất tính liên thông trở thành một Rừng - Forest.
+
+Trong CP, cách tối ưu và phổ biến nhất để biểu diễn cây là sử dụng <b>Danh sách kề</b> (Adjacency List).
+
+### <b>2. Duyệt cây và Tính toán thông số cơ bản</b>
+
+Thuật toán Tìm kiếm theo chiều sâu (DFS) là "xương sống" của hầu hết các bài toán về cây. Thông qua một lần chạy DFS, ta có thể lấy được các thông tin quan trọng của mỗi đỉnh:
+
+- depth[u] hay dist[u]: Độ sâu của đỉnh u (khoảng cách từ gốc).
+- sz[u]: Kích thước cây con gốc u (số lượng đỉnh nằm trong nhánh của u).
+- parent[u]: Cha trực tiếp của u.
+
+```c++
+const int limN = 1e5 + 5;
+vector<int> adj[limN];
+int dist[limN];
+int sz[limN];
+int parent[limN];
+
+// Gọi hàm: dfs(root, 0)
+void dfs(int u, int p) {
+    sz[u] = 1;         // Bản thân u là 1 đỉnh
+    parent[u] = p;     // Lưu lại cha của u
+    for (int v : adj[u]) {
+        if (v == p) continue; // Không quay ngược lại cha
+        dist[v] = dist[u] + 1;
+        dfs(v, u);
+        sz[u] += sz[v]; // Cộng dồn kích thước cây con
+    }
+}
+```
+
+### <b>3. Đường kính của Cây (Tree Diameter)</b>
+
+Đường kính của cây là đường đi dài nhất giữa hai đỉnh bất kỳ. Thuật toán tối ưu nhất là dùng 2 lần DFS/BFS:
+
+1. Bắt đầu DFS từ đỉnh bất kỳ (ví dụ đỉnh 1), tìm đỉnh $A$ xa nhất.
+2. Bắt đầu DFS từ đỉnh $A$, tìm đỉnh $B$ xa nhất. Khoảng cách từ $A$ đến $B$ chính là đường kính của cây.
+
+```c++
+const int limN = 1e5 + 5;
+vector<int> adj[limN];
+int dist[limN];
+void dfs(int u, int p) {
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dist[v] = dist[u] + 1;
+        dfs(v, u);
+    }
+}
+int get_diameter(int n) {
+    // Lần 1: Tìm đỉnh xa đỉnh 1 nhất
+    dist[1] = 0;
+    dfs(1, 0);
+    int nodeA = 1;
+    for (int i = 1; i <= n; i++) {
+        if (dist[i] > dist[nodeA]) nodeA = i;
+    }
+    // Lần 2: Tìm đỉnh xa đỉnh nodeA nhất
+    dist[nodeA] = 0;
+    dfs(nodeA, 0);
+    int nodeB = nodeA;
+    for (int i = 1; i <= n; i++) {
+        if (dist[i] > dist[nodeB]) nodeB = i;
+    }
+    return dist[nodeB]; // dist[nodeB] là đường kính
+}
+```
+
+### <b>4. Trải phẳng cây (DFS Order / Euler Tour)</b>
+Kỹ thuật biến đổi một cấu trúc cây thành một mảng 1 chiều để áp dụng các cấu trúc dữ liệu như Segment Tree hay Fenwick Tree (BIT).
+
+- <b>Ý tưởng:</b> Dùng bộ đếm `timer`, lưu lại thời điểm bắt đầu vào đỉnh `(tin[u])` và thời điểm thoát khỏi đỉnh `(tout[u])`.
+- <b>Tính chất:</b> Toàn bộ các đỉnh nằm trong cây con của $u$ sẽ có chỉ số tin nằm trong đoạn $[tin[u], tout[u]]$. Mọi bài toán truy vấn/cập nhật trên cây con lúc này trở thành truy vấn/cập nhật trên một đoạn mảng 1 chiều.
+
+```c++
+int timer = 0;
+int tin[MAXN];
+int tout[MAXN];
+int flat_array[MAXN]; // Mảng 1 chiều lưu lại giá trị các đỉnh theo thứ tự thăm
+void dfs_tour(int u, int p) {
+    tin[u] = ++timer;       // Ghi nhận thời điểm vào
+    flat_array[timer] = u;  // (Tùy chọn) Lưu lại đỉnh tại thời điểm này
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs_tour(v, u);
+    }
+    tout[u] = timer;        // Ghi nhận thời điểm ra
+    // Lưu ý: Có 2 cách cài tout. 
+    // Cài tout[u] = timer như trên thì đoạn của cây con u là [tin[u], tout[u]].
+    // Nếu cài tout[u] = ++timer thì đoạn sẽ là [tin[u], tout[u] - 1].
+}
+```
+
+Giả sử có bài toán:
+
+1. Cộng thêm giá trị $X$ vào toàn bộ đỉnh thuộc cây con gốc $u$.
+2. Tính tổng giá trị hiện tại của một đỉnh $v$.
+
+Sau khi gọi dfs_tour(root, 0), bài toán trên cây con gốc $u$ trở thành thao tác cộng đoạn $[tin[u], tout[u]]$ trên mảng 1 chiều. Ta có thể dùng BIT để xử lý gọn gàng với độ phức tạp $O(\log N)$:
+
+```c++
+// Thao tác 1: Cộng X vào toàn bộ cây con gốc u
+// Tương đương update mảng hiệu số (Difference Array)
+void update_subtree(int u, int X, int n) {
+    fenwick_tree.update(tin[u], X, n);             // Cộng X vào đầu đoạn
+    fenwick_tree.update(tout[u] + 1, -X, n);       // Trừ X ở ngay sau cuối đoạn
+}
+// Thao tác 2: Lấy giá trị hiện tại của đỉnh v
+int get_node_value(int v) {
+    return fenwick_tree.query(tin[v]);
+}
+```
+
+### <b>5. Tổ tiên chung gần nhất (LCA - Binary Lifting)</b>
+
+Hầu hết các bài toán thao tác trên đường đi giữa 2 đỉnh $(u, v)$ đều cần dùng LCA.
+
+<b>Kỹ thuật: Nhảy nhị phân (Binary Lifting)</b>
+
+- Độ phức tạp: Khởi tạo $\mathcal{O}(N \log N)$, Truy vấn $\mathcal{O}(\log N)$.
+- Ý tưởng: Mảng up[u][j] lưu tổ tiên thứ $2^j$ của đỉnh $u$.
+-  Công thức truy hồi: 
+
+$$up[u][j] = up[up[u][j-1]][j-1]$$
+
+- Khoảng cách giữa 2 đỉnh u và v trên cây có thể tính nhanh bằng công thức:
+
+$$dist(u, v) = dist[u] + dist[v] - 2 * dist[\text{get_lca}(u, v)]$$
+
+(Kết hợp Mảng cộng dồn trên cây (Tree Prefix Sum) để tính tổng/max/min trên đường đi từ $u$ đến $v$.)
+
+```c++
+const int limN = 1e5 + 5;
+vector<int> adj[limN];
+int dist[limN];
+const int LOG = 20; // log2(2e5) ~ 18, chọn 20 cho an toàn
+int up[limN][LOG];
+// Bước 1: Tiền xử lý mảng 'up' thông qua DFS
+// Gọi hàm: dfs_lca(root, root)
+void dfs_lca(int u, int p) {
+    up[u][0] = p;
+    for (int i = 1; i < LOG; i++) {
+        up[u][i] = up[up[u][i - 1]][i - 1];
+    }
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dist[v] = dist[u] + 1;
+        dfs_lca(v, u);
+    }
+}
+// Bước 2: Truy vấn LCA(u, v)
+int get_lca(int u, int v) {
+    if (dist[u] < dist[v]) swap(u, v);
+    // Đưa u và v về cùng độ sâu
+    int diff = dist[u] - dist[v];
+    for (int i = 0; i < LOG; i++) {
+        if ((diff >> i) & 1) {
+            u = up[u][i];
+        }
+    }
+    if (u == v) return u;
+    // Nhảy cả u và v lên cao nhất có thể mà chưa chạm mặt nhau
+    for (int i = LOG - 1; i >= 0; i--) {
+        if (up[u][i] != up[v][i]) {
+            u = up[u][i];
+            v = up[v][i];
+        }
+    }
+    return up[u][0]; // Cha trực tiếp của điểm dừng là LCA
+}
+```
+
+### <b>6. Quy hoạch động trên cây (Tree DP)</b>
+
+#### <b>Tree DP cơ bản (Từ dưới lên)</b>
+
+Trạng thái của đỉnh $u$ được tính dựa trên các đỉnh con $v$ của nó.
+
+<b>Bài toán kinh điển:</b> Tìm kích thước của Tập con độc lập lớn nhất (Maximum Independent Set - MIS). Không có bất kỳ 2 đỉnh nào kề nhau được chọn.
+
+- dp[u][0]: Kết quả tối ưu trong cây con gốc $u$ nếu không chọn đỉnh $u$.
+- dp[u][1]: Kết quả tối ưu trong cây con gốc $u$ nếu chọn đỉnh $u$.
+
+```c++
+int dp[MAXN][2];
+void dfs_basic_dp(int u, int p) {
+    dp[u][0] = 0;
+    dp[u][1] = 1; // Chọn chính u thì ban đầu có kích thước 1
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs_basic_dp(v, u);
+        // Nếu không chọn u, ta có thể chọn hoặc không chọn v (lấy Max)
+        dp[u][0] += max(dp[v][0], dp[v][1]);
+        // Nếu chọn u, ta bắt buộc KHÔNG ĐƯỢC chọn v
+        dp[u][1] += dp[v][0];
+    }
+}
+// Đáp án cho toàn bộ cây là: max(dp[root][0], dp[root][1])
+```
+
+#### <b>Re-rooting DP (Quy hoạch động thay đỉnh gốc / In-Out DP)</b> 
+
+Dạng bài yêu cầu tính toán một giá trị cho mọi đỉnh làm gốc với độ phức tạp $\mathcal{O}(N)$:
+
+1. Bước 1: DFS từ dưới lên để tính đáp án cho nhánh con (In-DP).
+2. Bước 2: DFS từ trên xuống để tính phần đóng góp của nhánh ngoài (Out-DP) và cập nhật đáp án cuối cùng.
+
+<b>Bài toán kinh điển:</b> Tính tổng khoảng cách từ đỉnh $u$ đến tất cả các đỉnh còn lại trong cây, áp dụng cho mọi đỉnh $u$.
+
+Thay vì chạy DFS từ mỗi đỉnh mất $\mathcal{O}(N^2)$, ta sẽ làm trong $\mathcal{O}(N)$ với 2 lần DFS:
+
+1. DFS 1 (Bottom-up): Tính tổng khoảng cách trong cây con của $u$ (dp_in[u]) và kích thước cây con (sz[u]).
+
+2. DFS 2 (Top-down): Cập nhật đáp án khi dời gốc từ cha $u$ xuống con $v$. Khi dời gốc xuống $v$, các đỉnh trong cây con của $v$ sẽ gần lại 1 bước (giảm sz[v]), còn các đỉnh ngoài cây con của $v$ sẽ xa ra 1 bước (tăng N - sz[v]).
+
+```c++
+long long dp_in[MAXN]; // Tổng khoảng cách tới các đỉnh trong cây con
+int sz[MAXN];          // Kích thước cây con
+long long ans[MAXN];   // Đáp án cuối cùng cho mỗi đỉnh
+int N;                 // Tổng số đỉnh của cây
+// Bước 1: DFS từ dưới lên để tính In-DP
+void dfs_in(int u, int p) {
+    sz[u] = 1;
+    dp_in[u] = 0;
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs_in(v, u);
+        sz[u] += sz[v];
+        dp_in[u] += dp_in[v] + sz[v]; // Mỗi đỉnh trong cây con v sẽ cách u thêm 1 cạnh
+    }
+}
+// Bước 2: DFS từ trên xuống để tính Out-DP (Re-rooting)
+void dfs_out(int u, int p) {
+    // Với gốc ban đầu (thường là 1), đáp án chính là dp_in
+    // ans[1] = dp_in[1] đã được gán trước khi gọi dfs_out
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        // Công thức dời gốc từ u xuống v:
+        // ans[v] = ans[u] - (số đỉnh lại gần 1 bước) + (số đỉnh ra xa 1 bước)
+        ans[v] = ans[u] - sz[v] + (N - sz[v]);
+        dfs_out(v, u);
+    }
+}
+void solve_rerooting() {
+    // Giả sử đã đọc cây và N
+    dfs_in(1, 0);
+    ans[1] = dp_in[1]; // Đỉnh 1 làm gốc chuẩn
+    dfs_out(1, 0);
+    // In ra đáp án
+    for (int i = 1; i <= N; i++) {
+        cout << ans[i] << " ";
+    }
+}
+```
+
+
+### <b>7. DSU on Tree (Sack / Small to Large Merging)</b>
+
+Kỹ thuật này (còn gọi là thuật toán Sack) dùng để giải các bài toán <b>truy vấn offline trên cây con</b> (ví dụ: đếm số màu phân biệt trong cây con của đỉnh $u$) với độ phức tạp $O(N \log N)$ thay vì $O(N^2)$.
+
+Ý tưởng cốt lõi: Khi gộp kết quả của các cây con lên đỉnh cha, ta luôn giữ lại mảng đánh dấu của <b>thằng con lớn nhất</b> (heavy child - đỉnh có kích thước cây con lớn nhất) và chỉ tính lại thông tin cho các thằng con nhỏ (light children).
+
+```c++
+const int limN = 1e5 + 5;
+vector<int> adj[limN];
+int dist[limN];
+int sz[limN];
+int is_big[limN], color[limN];
+int cnt[limN];      // Mảng đếm tần số (hoặc cấu trúc dữ liệu lưu trạng thái)
+int bigChild[limN]; // Lưu thằng con lớn nhất của mỗi đỉnh
+int ans[limN];      // Lưu đáp án cho mỗi đỉnh
+// Bước 1: DFS để tính sz và tìm bigChild
+void dfs(int u, int p) {
+    sz[u] = 1;
+    int max_sub = 0;
+    for (int v : adj[u]) {
+        if (v == p) continue;
+        dfs(v, u);
+        sz[u] += sz[v];
+        if (sz[v] > max_sub) {
+            max_sub = sz[v];
+            bigChild[u] = v;
         }
     }
 }
-FOR(i, 1, n + 1) {
-    cout << dist[s][i] << ' ';
+// Hàm thêm/xóa dữ liệu của cây con gốc u
+void add_subtree(int u, int p, int val) {
+    cnt[color[u]] += val; // Giả sử đỉnh u có màu color[u]
+    // Cập nhật biến kết quả toàn cục ở đây nếu cần
+    for (int v : adj[u]) {
+        if (v != p && !is_big[v]) { // Không tính lại bigChild
+            add_subtree(v, u, val);
+        }
+    }
+}
+// Bước 2: DFS Sack tính kết quả
+// keep = 1 nếu u là bigChild của cha nó (cần giữ lại dữ liệu), ngược lại = 0
+void dfs_sack(int u, int p, bool keep) {
+    // Duyệt qua các con nhỏ (light children) trước
+    for (int v : adj[u]) {
+        if (v != p && v != bigChild[u]) {
+            dfs_sack(v, u, 0);
+        }
+    }
+    // Duyệt thằng con lớn (heavy child) và giữ lại dữ liệu của nó
+    if (bigChild[u]) {
+        dfs_sack(bigChild[u], u, 1);
+        is_big[bigChild[u]] = 1; // Đánh dấu để hàm add_subtree bỏ qua
+    }
+    // Thêm bản thân đỉnh u và các con nhỏ vào cấu trúc dữ liệu
+    add_subtree(u, p, 1);
+    // Ghi nhận đáp án cho đỉnh u
+    ans[u] = /* Giá trị hiện tại */;
+    // Dọn dẹp đánh dấu
+    if (bigChild[u]) {
+        is_big[bigChild[u]] = 0;
+    }
+    // Nếu u không phải là con lớn của cha nó, xóa toàn bộ dữ liệu vừa thêm
+    if (!keep) {
+        add_subtree(u, p, -1);
+    }
 }
 ```
