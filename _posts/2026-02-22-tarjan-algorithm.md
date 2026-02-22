@@ -729,7 +729,7 @@ void dfs(int u, int pid) { // (đỉnh hiện tại, ID cạnh vừa đi qua)
             child++;
             dfs(v, id);
             minimize(low[u], low[v]);
-            if(disc[u] <= low[v] && pid) {
+            if(pid && disc[u] <= low[v]) {
                 ap.insert(u);
             }
             if(disc[u] < low[v]) {
