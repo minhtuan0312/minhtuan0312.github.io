@@ -606,7 +606,7 @@ void dfs(int u, int p) {
             dfs(v, u);
             minimize(low[u], low[v]); // nếu v có đường lên tổ tiên của u thì cập nhật
             // điều kiện khớp 2: u không phải root và v không có đường nào lên tổ tiên của u
-            if(disc[u] <= low[v] && p) { 
+            if(p && disc[u] <= low[v]) { 
                 ap.insert(u);
             }
         } else {
