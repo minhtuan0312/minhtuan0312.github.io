@@ -464,51 +464,66 @@ Nói theo ngôn ngữ đồ thị: <b>$x_i$ và $\neg x_i$ nằm trong cùng m�
 
 - <b>Logic:</b> Nếu $x_i \implies \neg x_i$, điều đó có nghĩa là nếu $x_i$ đúng thì nó cũng phải sai (vô lý). Nếu cả hai chiều đều xảy ra, ta rơi vào một vòng lặp mâu thuẫn không thể tháo gỡ.
 
-### <b>5. Ứng dụng thực tế</b>
+### <b>5. Một số patterns và dấu hiệu nhận biết 2-SAT</b>
 
-2-SAT không chỉ là lý thuyết suông, nó xuất hiện rất nhiều trong các bài toán thực tế:
-- <b>Xếp lịch:</b> "Bạn A và Bạn B không thể cùng trực nhật" $\to (\neg A \lor \neg B)$.
-- <b>Hậu cần:</b> "Nếu chọn địa điểm X thì không được chọn địa điểm Y".
-- <b>Trò chơi:</b> Các bài toán dạng "Peaceful Settlement" hoặc sắp xếp các quân cờ sao cho không ăn nhau trên bàn cờ biến thể.
+| Yêu cầu thực tế | Công thức 2-SAT | Hệ quả 1 ($\neg L_1 \rightarrow L_2$) | Hệ quả 2 ($\neg L_2 \rightarrow L_1$) | Giải thích dân dã |
+|:--|:--|:--|:--|:--|
+| Ít nhất 1 trong 2 (OR) | $(x_A \lor x_B)$ | $\neg x_A \Rightarrow x_B$ | $\neg x_B \Rightarrow x_A$ | Không chọn A thì buộc phải chọn B. |
+| Loại trừ lẫn nhau (NAND) | $(\neg x_A \lor \neg x_B)$ | $x_A \Rightarrow \neg x_B$ | $x_B \Rightarrow \neg x_A$ | Đã chọn A thì cấm chọn B (và ngược lại). |
+| Ràng buộc kéo theo (IF–THEN) | $(\neg x_A \lor x_B)$ | $x_A \Rightarrow x_B$ | $\neg x_B \Rightarrow \neg x_A$ | Có A là phải có B; Không có B thì chắc chắn không có A. |
+| Bắt buộc chọn A | $(x_A \lor x_A)$ | $\neg x_A \Rightarrow x_A$ | — | Nếu giả sử "Không A" thì dẫn đến mâu thuẫn, nên A phải đúng. |
+| Bắt buộc bỏ A | $(\neg x_A \lor \neg x_A)$ | $x_A \Rightarrow \neg x_A$ | — | Nếu giả sử "Có A" thì dẫn đến mâu thuẫn, nên A phải sai. |
+| Cùng sống cùng chết (IFF) | $(x_A \lor \neg x_B)\land(\neg x_A \lor x_B)$ | $x_B \Rightarrow x_A$ | $x_A \Rightarrow x_B$ | A có thì B có, A mất thì B mất (tương đương $x_A = x_B$). |
+| Chọn đúng 1 trong 2 (XOR) | $(x_A \lor x_B)\land(\neg x_A \lor \neg x_B)$ | $\neg x_A \Rightarrow x_B$ | $x_A \Rightarrow \neg x_B$ | Không được chọn cả hai, cũng không được bỏ cả hai. |
+
+> Để một bài toán được coi là <b>2-SAT</b>, nó phải thỏa mãn hai điều kiện cần và đủ sau:<br> 1. <b>Biến số nhị phân:</b> Mỗi đối tượng chỉ có <b>đúng 2 khả năng</b> xảy ra (Đúng/Sai, A/B, Bật/Tắt). <br> 2. <b>Ràng buộc cặp (Pairwise):</b> Các điều kiện hạn chế chỉ xảy ra giữa <b>tối đa 2 biến</b> với nhau.
+{: .prompt-info}
 
 ### <b>6. Giải 2-SAT sử dụng thuật toán Tarjan</b>
 
 Để giải 2-SAT, ta cần làm 2 việc: Kiểm tra xem có nghiệm hay không, và nếu có thì nghiệm đó là gì (biến nào `True`, biến nào `False`). Thuật toán Tarjan xử lý mượt mà cả hai việc này:
 
-#### <b>1. Dựng đồ thị:</b> 
+#### <b>1. Dựng đồ thị</b> 
 
 Giả sử có $N$ biến. Ta mở rộng thành $2N$ đỉnh. Đỉnh $i$ đại diện cho $X_i$ (mang giá trị True), đỉnh $i+N$ đại diện cho $\neg X_i$ (mang giá trị False). Với điều kiện $(A \lor B)$, ta thêm 2 cung: $\neg A \to B$ và $\neg B \to A$.
 
-> Hàm `getNode(int x)`: Trả về ID của đỉnh tương ứng với giá trị logic $x$.
+> Hàm `getId(int x)`: Trả về <b>ID của đỉnh</b> tương ứng với giá trị logic $x$.
 {: .prompt-info}
 
 - Nếu $x > 0$: Nghĩa là biến $x$ đang ở trạng thái khẳng định ($X_x$) $\Rightarrow$ Trả về chính nó (ID nằm trong khoảng $1 \dots n$).
 - Nếu $x < 0$: Nghĩa là biến $x$ đang ở trạng thái phủ định ($\neg X_{\|x\|}$). $\Rightarrow$ Trả về $-x + n$ (tương đương $\|x\| + n$, ID nằm trong khoảng $n+1 \dots 2n$).
 
 <b>Ví dụ ($n=10$):</b>
-1. `getNode(3)` $\to$ trả về đỉnh 3 (Đại diện cho $X_3$ là TRUE).
-2. `getNode(-3)` $\to$ trả về đỉnh 13 (Đại diện cho $X_3$ là FALSE).
+1. `getId(3)` $\to$ trả về đỉnh 3 (Đại diện cho $X_3$ là TRUE).
+2. `getId(-3)` $\to$ trả về đỉnh 13 (Đại diện cho $X_3$ là FALSE).
 
-> Hàm `getNode(int x)`: Trả về ID của đỉnh tương ứng với giá trị logic $x$.
+> Hàm `getNeg(int x)`: Trả về <b>ID của đỉnh đối lập với giá trị logic $x$</b>. Đây là hàm cực kỳ quan trọng để xây dựng các cạnh suy diễn ($\neg A \to B$).
 {: .prompt-info}
 
-- Nếu $x > 0$: Nghĩa là biến $x$ đang ở trạng thái khẳng định ($X_x$).
-- Nếu $x < 0$: Nghĩa là biến $x$ đang ở trạng thái phủ định ($\neg X_{\|x\|}$).
+- Nếu $x > 0$ (đang là Khẳng định): Ta cần tìm Phủ định của nó $\to$ Trả về $x + n$.
+- Nếu $x < 0$ (đang là Phủ định): Ta cần tìm Khẳng định của nó $\to$ Trả về $-x$ (tức là $\|x\|$).
 
 <b>Ví dụ ($n=10$):</b>
-1. `getNeg(3)` $\to$ trả về 13 (Phủ định của "X3 TRUE" là "X3 FALSE").
-2. `getNeg(-3)` $\to$ trả về 3 (Phủ định của "X3 FALSE" là "X3 TRUE").
+- getNeg(3) $\to$ trả về 13 (Phủ định của "3 TRUE" là "3 FALSE").
+- getNeg(-3) $\to$ trả về 3 (Phủ định của "3 FALSE" là "3 TRUE").
 
-#### <b>2. Kiểm tra vô nghiệm:</b> 
+```c++
+adj[getNeg(u)].eb(getId(v)); // Nếu phủ định của u xảy ra, thì v phải xảy ra
+adj[getNeg(v)].eb(getId(u)); // Nếu phủ định của v xảy ra, thì u phải xảy ra
+```
 
-Chạy Tarjan tìm SCC. Nếu tồn tại biến $i$ mà đỉnh $i$ và đỉnh $i+N$ có cùng scc id (`scc_id[i] == scc_id[i+N]`), bài toán vô nghiệm. Vì $X \implies \dots \implies \neg X$ và $\neg X \implies \dots \implies X$ tạo ra một vòng lặp nghịch lý.
+#### <b>2. Kiểm tra vô nghiệm</b> 
 
-#### <b>3. Khôi phục nghiệm cực nhanh:</b> 
+Chạy Tarjan tìm SCC. Nếu tồn tại biến $i$ mà đỉnh $i$ và đỉnh $i+N$ có cùng `scc_id` (`scc_id[i] == scc_id[i+N]`), bài toán vô nghiệm. Vì $X \implies \dots \implies \neg X$ và $\neg X \implies \dots \implies X$ tạo ra một vòng lặp nghịch lý.
+
+#### <b>3. Khôi phục nghiệm</b> 
 
 Tarjan duyệt xong một SCC và gán ID cho nó khi nó không thể đi tới một SCC nào chưa được xử lý. Điều này có nghĩa là các SCC được gán ID theo <b>thứ tự ngược của Topo.</b> (Như `dạng 3` đã đề cập)
-- Trong đồ thị suy luận, ta luôn phải ưu tiên chọn các đỉnh nằm "cuối" đường đi (sink) để tránh việc chọn đỉnh đầu nhưng lại suy ra một điều kiện sai ở cuối.
-- Do ID của Tarjan là ngược Topo, nên đỉnh nào có SCC ID nhỏ hơn sẽ nằm "cuối" hơn.
-- Vì vậy, ta chỉ cần phép gán cực kỳ thanh lịch: `ans[i] = (scc[i] < scc[i+N])`.
+- Trong đồ thị suy luận, ta luôn phải ưu tiên chọn các đỉnh nằm "cuối" đường đi (sink) để <b>tránh việc chọn đỉnh đầu nhưng lại suy ra một điều kiện sai ở cuối</b>.
+- Do ID của Tarjan là ngược Topo, nên đỉnh nào có `scc_id` nhỏ hơn sẽ nằm ở cuối hơn.
+- Vì vậy, ta chỉ cần phép gán đơn giản: `ans[i] = (scc[i] < scc[i+N])`.
+
+#### <b>4. Bài toán ví dụ</b> 
 
 <div class="problem-link">
   🔗 <strong>VNOJ - TWOSAT</strong>
@@ -516,6 +531,35 @@ Tarjan duyệt xong một SCC và gán ID cho nó khi nó không thể đi tới
     Du lịch
   </a>
 </div>
+
+```c++
+//...
+inline int getId(int x) {
+    return x > 0? x: -x + n;
+}
+inline int getNeg(int x) {
+    return x > 0? x + n: -x;
+}
+int main(void) {
+    // A or B = (not A -> B) and (not B -> A)
+    cin >> m >> n;
+    FOR(i, 1, m + 1) {
+        int u, v; cin >> u >> v;
+        adj[getNeg(u)].eb(getId(v));
+        adj[getNeg(v)].eb(getId(u));
+    }
+    FOR(u, 1, (n << 1))  {
+        if(!disc[u]) dfs(u); // chạy tarjan
+    }
+    vector<int> res;
+    FOR(u, 1, n + 1) {
+        if(scc_id[u] == scc_id[u + n]) return cout << "NO", 0;
+        if(scc_id[u] < scc_id[u + n]) res.eb(u);
+    }
+    cout << "YES" << nl << sz(res) << nl;
+    for(const int &x: res) cout << x << ' ';
+}
+```
 
 <div class="problem-link">
   🔗 <strong>CSES - Giant Pizza</strong>
