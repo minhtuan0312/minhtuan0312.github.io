@@ -120,8 +120,10 @@ Tuy nhiên, nếu đồ thị <b>có chu trình, việc dùng DP sẽ bị lặp
 3. <b>Bước 3:</b> Tính trọng số cho siêu đỉnh và chạy DP/Topo Sort trên đồ thị DAG vừa tạo..
 - <b>Lưu ý:</b> Tùy vào yêu cầu bài toán, trọng số có thể là tổng giá trị, số lượng đỉnh trong SCC, hoặc giá trị lớn nhất/nhỏ nhất.
 
-> Đặc biệt: Thuật toán Tarjan gán `scc_id` theo thứ tự <b>topo ngược</b> với `scc_id = 1` luôn là điểm cuối (sink) và `scc_id = scc` luôn là điểm đầu (source) <br> $\Rightarrow$ Nên ta chỉ cần for từ 1 đến scc là tự động đúng thứ tự Topo.
+> Đặc biệt: Thuật toán Tarjan gán `scc_id` theo thứ tự <b>topo ngược</b> với `scc_id = 1` luôn là <b>điểm cuối (đỉnh trũng - sink)</b> và `scc_id = scc` luôn là <b>điểm đầu (đinh nguồn - source)</b> <br> $\Rightarrow$ Nên ta chỉ cần for từ 1 đến scc là tự động đúng thứ tự Topo.
 {: .prompt-info}
+
+<i>(Khái niệm đỉnh nguồn & đỉnh trũng xem `dạng 3` để hiểu rõ)<i>
 
 ```c++
 int n, m;
