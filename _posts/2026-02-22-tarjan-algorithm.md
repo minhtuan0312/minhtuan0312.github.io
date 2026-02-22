@@ -4,7 +4,7 @@ title: Thuật toán Tarjan🏝️
 date: 2026-02-22 01:06 +0700
 math: true
 categories: [graph]
-tags: [thuật toán tarjan, khớp và cầu, nén đồ thị, 2sat, đỉnh nguồn & đỉnh trũng]
+tags: [thuật toán tarjan, khớp và cầu, nén đồ thị, 2sat, đỉnh nguồn & đỉnh trũng, dag, dp]
 ---
 
 ![Tarjan Demo](/assets/img/tarjan.gif)
@@ -759,3 +759,89 @@ int main(void) {
     cout << sz(ap) << ' ' << sz(bridges);
 }
 ```
+
+## <b>Dạng 6: Thành phần song liên thông cạnh (2-Edge-Connected Components - 2-ECC) và Bridge Tree (Cây cầu)
+
+- <b>Thành phần song liên thông cạnh (2-ECC):</b> Là một tập hợp các đỉnh lớn nhất sao cho giữa hai đỉnh bất kỳ luôn có ít nhất 2 đường đi không chung cạnh. <b>Hiểu nôn na đây là các vùng không chứa bất kỳ cái cầu nào</b>.
+
+- <b>Bridge Tree (Cây cầu):</b> Nếu ta xem mỗi 2-ECC là một <b>Siêu đỉnh</b>, và giữ lại các cạnh cầu để nối các siêu đỉnh này, đồ thị ban đầu sẽ biến thành một cái <b>Cây (không có chu trình)</b>.
+
+1. <b>Bước 1:</b> Dùng Tarjan tìm tất cả các cầu của đồ thị.
+2. <b>Bước 2:</b> Gom các 2-ECC bằng cách <b>xóa tạm thời các cầu</b>. Đồ thị sẽ vỡ ra thành các thành phần liên thông. Mỗi thành phần này chính là một 2-ECC. Đánh số ID cho từng 2-ECC (gọi là mảng `comp_id[]`).
+3. <b>Bước 3:</b> Dựng Bridge Tree bằng cách nối các cầu lại, thay vì nối đỉnh $u$ và $v$, ta <b>nối `comp_id[u]` và `comp_id[v]`</b>. Lúc này ta thu được một <b>Cây</b>.
+4. <b>Bước 4:</b> Giải quyết bài toán
+
+```c++
+typedef pair<int, int> ii;
+int n, m;
+const int limN = 1e5 + 5;
+vector<ii> adj[limN];
+int timer = 0;
+int disc[limN], low[limN];
+vector<ii> bridges;
+bool isBridge[limN];   // đánh dấu ID của cạnh là cầu
+void dfs(int u, int pid) {
+    disc[u] = low[u] = ++timer;
+    for(const auto&[v, id]: adj[u]) {
+        if(id == pid) continue;
+        if(!disc[v]) {
+            dfs(v, id);
+            minimize(low[u], low[v]);
+            if(disc[u] < low[v]) {
+                bridges.eb(u, v);
+                isBridge[id] = 1;
+            }
+        } else {
+            minimize(low[u], disc[v]);
+        }
+    }
+}
+vector<int> tree[limN]; // cây bridge tree
+int comp = 0;           // đếm số lượng 2-ECC
+int comp_id[limN];      // lưu ID của 2-ECC mà đỉnh u thuộc về
+int deg[limN];          // lưu bậc của các 2-ECC trên Bridge Tree
+void dfs_comp(int u) {
+    comp_id[u] = comp; // gán id của 2-ECC cho đỉnh u
+    for(const auto &[v, id]: adj[u]) {
+        // nếu v chưa được gom vào 2-ECC nào và cạnh nối không phải là cầu
+        if(!comp_id[v] && !isBridge[id]) {
+            dfs_comp(v);
+        }
+    }
+}
+int main(void) {
+    cin >> n >> m;
+    FOR(i, 1, m + 1) {
+        int u, v; cin >> u >> v;
+        adj[u].eb(v, i);
+        adj[v].eb(u, i);
+    }
+    // bước 1: tarjan để thu các cạnh cầu
+    FOR(u, 1, n + 1) {
+        if(!disc[u]) dfs(u, 0);
+    }
+    // bước 2: gom các 2-ECC
+    FOR(u, 1, n + 1) {
+        if(!comp_id[u]) {
+            comp++;
+            dfs_comp(u);
+        }
+    }
+    // bước 3: xây bridge tree & tính bậc của các 2-ECC trên bridge tree
+    for(const auto &[u, v]: bridges) {
+        int a = comp_id[u];
+        int b = comp_id[v];
+        tree[a].eb(b);
+        tree[b].eb(a);
+        // mỗi cạnh cầu sẽ đóng góp 1 bậc cho 2 thành phần liên thông nó nối
+        deg[a]++;
+        deg[b]++;
+    }
+    // bước 4: giải quyết bài toán...
+}
+```
+
+> Cần thêm <b>ít nhất bao nhiêu cạnh</b> để đồ thị trở thành đồ thị song liên thông cạnh (nghĩa là mất hoàn toàn các cạnh cầu)
+- Để triệt tiêu toàn bộ cầu, ta cần tạo ra các chu trình bao phủ toàn bộ cây. Cách tối ưu nhất là nối các đỉnh lá lại với nhau theo cặp (ví dụ: nối lá 1 với lá 3, lá 2 với lá 4,...).
+- Mỗi cạnh thêm vào có thể <b>xử lý</b> tối đa 2 chiếc lá. Do đó, số cạnh tối thiểu cần thêm là $\lceil \frac{L}{2} \rceil$. Trong code C++, công thức này có thể viết nhanh là `(L + 1) / 2`.
+{: .prompt-info}
