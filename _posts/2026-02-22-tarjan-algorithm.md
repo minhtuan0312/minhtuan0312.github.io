@@ -120,7 +120,7 @@ Tuy nhiên, nếu đồ thị <b>có chu trình, việc dùng DP sẽ bị lặp
 3. <b>Bước 3:</b> Tính trọng số cho siêu đỉnh và chạy DP/Topo Sort trên đồ thị DAG vừa tạo..
 - <b>Lưu ý:</b> Tùy vào yêu cầu bài toán, trọng số có thể là tổng giá trị, số lượng đỉnh trong SCC, hoặc giá trị lớn nhất/nhỏ nhất.
 
-> Đặc biệt: Thuật toán Tarjan gán `scc_id` theo thứ tự <b>topo ngược</b> với `scc_id = 1` luôn là <b>điểm cuối (đỉnh trũng - sink)</b> và `scc_id = scc` luôn là <b>điểm đầu (đinh nguồn - source)</b> <br> $\Rightarrow$ Nên ta chỉ cần for từ 1 đến scc là tự động đúng thứ tự Topo.
+> Thuật toán Tarjan gán `scc_id` theo thứ tự <b>topo ngược</b> với `scc_id = 1` luôn là <b>điểm cuối (đỉnh trũng - sink)</b> và `scc_id = scc` luôn là <b>điểm đầu (đinh nguồn - source)</b> <br> $\Rightarrow$ Duyệt từ <b>1 $\to$ scc</b> là thứ tự <b>topo ngược</b>. <br> $\Rightarrow$ Duyệt từ <b>scc $\to$ 1</b> là thứ tự <b>topo xuôi</b>.
 {: .prompt-info}
 
 <i>(Khái niệm đỉnh nguồn & đỉnh trũng xem `dạng 3` để hiểu rõ)<i>
@@ -158,7 +158,7 @@ void dfs(int u) {
         }
     }
 }
-vector<int> dag[limN]; // đồ thị dag sau khi nén
+vector<int> dag_adj[limN]; // đồ thị dag sau khi nén
 ll weight_scc[limN]; // trọng số (tổng A[i]) của mỗi siêu đỉnh
 ll dp[limN];
 int main(void) {
@@ -180,7 +180,7 @@ int main(void) {
         for(const int &v: adj[u]) {
             // nếu u và v thuộc 2 scc khác nhau, tạo cạnh nối 2 siêu đỉnh
             if(scc_id[v] && scc_id[u] != scc_id[v]) {
-                dag[scc_id[u]].eb(scc_id[v]);
+                dag_adj[scc_id[u]].eb(scc_id[v]);
             }
         }
     }
@@ -201,10 +201,10 @@ FOR(u, 1, n + 1) {
     weight_scc[scc_id[u]] += A[u]; // tính trọng số cho mỗi siêu đỉnh scc
 }
 ll res = 0; // dp[u] = max(dp[v]) + weight
-FOR(u, 1, scc + 1) {
-    maximize(dp[u], weight_scc[u]); // skip
-    for(const int &v: dag[u]) {
-        maximize(dp[u], dp[v] + weight_scc[u]); // take
+FOR(u, 1, scc + 1) { // duyệt theo thứ tự topo ngược để tính trước v
+    maximize(dp[u], weight_scc[u]); // lấy chính nó làm điểm bắt đầu
+    for(const int &v: dag_adj[u]) {
+        maximize(dp[u], dp[v] + weight_scc[u]); // lấy v tốt nhất
     }
     maximize(res, dp[u]);
 }
@@ -256,7 +256,7 @@ $\Rightarrow \quad$ Cần đưa về DAG.
 
 ```c++
 //...
-vector<int> dag[limN];
+vector<int> dag_adj[limN];
 ll weight_scc[limN];
 ll dp[limN];
 inline int getId(int x, int y) {
@@ -308,7 +308,7 @@ int main(void) {
         if(!scc_id[u]) continue;
         for(const int &v: adj[u]) {
             if(scc_id[v] && scc_id[u] != scc_id[v]) {
-                dag[scc_id[u]].eb(scc_id[v]);
+                dag_adj[scc_id[u]].eb(scc_id[v]);
             }
         }
         weight_scc[scc_id[u]] += A[u];
@@ -316,7 +316,7 @@ int main(void) {
     // bước 3: giải quyết bài toán (dp trên dag)
     FOR(u, 1, scc + 1) {
         maximize(dp[u], weight_scc[u]);
-        for(const int &v: dag[u]) {
+        for(const int &v: dag_adj[u]) {
             maximize(dp[u], dp[v] + weight_scc[u]);
         }
     }

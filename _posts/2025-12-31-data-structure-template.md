@@ -2,7 +2,7 @@
 layout: post
 title: Một số template Data Structure🐧
 date: 2025-12-31 16:00 +0700
-categories: [template]
+categories: [data structure, template]
 tags: [debug]
 ---
 

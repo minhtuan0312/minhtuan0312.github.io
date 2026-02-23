@@ -659,3 +659,8 @@ ll comb(ll n, ll k, int p) {
     return (res + mod) % mod;
 }
 ```
+
+### Fibonacci
+
+- Bất kỳ dãy số nào tuân theo quy luật $X_n = X_{n-1} + X_{n-2}$ đều được định nghĩa hoàn toàn chỉ bằng 2 phần tử đầu tiên là $X_1$ và $X_2$. Khi 2 truy vấn đè lên nhau, ta chỉ cần cộng các phần tử đầu tiên lại
+
