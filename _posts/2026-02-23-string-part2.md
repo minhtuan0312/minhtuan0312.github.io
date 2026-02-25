@@ -10,7 +10,7 @@ tags: [hash]
 > <b> Đây là phần 2 của `Các thuật toán về xâu kí tự`, xem phần 1 ở đây</b>: [Các thuật toán về xâu kí tự🔐 (Phần 1)](/posts/string-part1/)
 {: .prompt-info}
 
-## <b>A. Trie + Trie XOR + Aho–Corasick</b>
+## <b>A. Trie + Trie XOR</b>
 
 ### <b>I, Trie</b>
 
@@ -214,10 +214,126 @@ $\Rightarrow$ <b>Kết luận:</b> Nếu tại bit thứ $i$, ta có cơ hội t
 2. Nếu $i > K$, xóa $P[i-K-1]$ khỏi Trie: `trie.update(P[i-K-1], -1)`.
 3. Truy vấn `trie.getMax(P[i])`.
 
-## <b> III, Aho–Corasick </b>
+## <b> B. Aho–Corasick (KMP trên cây Trie)</b>
 
-## <b>B. Suffix Array & Thuật toán Kasai</b>
+## <b>C. Suffix Array & Thuật toán Kasai</b>
 
-## <b>C. Suffix Tree</b>
+### <b>I. Suffix Array (Mảng hậu tố)</b>
+
+Giả sử ta có xâu $S$ độ dài $N$ (chỉ số từ 1 đến $N$). Một <b>hậu tố</b> bắt đầu tại $i$ là một xâu con kéo dài từ vị trí $i$ đến cuối xâu: $S[i \dots N]$.
+
+<b>Suffix Array ($SA$)</b> là một mảng lưu <b>chỉ số bắt đầu</b> của tất cả $N$ hậu tố của xâu $S$, nhưng các hậu tố này đã được <b>sắp xếp theo thứ tự từ điển</b>.
+
+<b>Một số ứng dụng:</b>
+- <b>Tìm kiếm xâu con:</b> Kiểm tra xâu $P$ có xuất hiện trong $S$ không bằng Chặt nhị phân trên SA trong $O(\|P\| \log N)$.
+- <b>Đếm số xâu con phân biệt:</b> Tổng số xâu con là $\frac{n(n+1)}{2}$, trừ đi tổng các giá trị trong mảng LCP.
+- <b>Tìm xâu con lặp lại dài nhất:</b> Chính là giá trị lớn nhất trong mảng LCP.
+- <b>Xâu con chung dài nhất của 2 xâu:</b> Nối 2 xâu lại và dựng SA.
+
+<b>Thuật toán xây dựng: Prefix Doubling ($O(N \log^2 N)$)</b>
+
+Cách ngây thơ là dùng `sort` để so sánh các chuỗi mất $O(N^2 \log N)$. Để tối ưu, chúng ta dùng kỹ thuật <b>nhân đôi tiền tố</b> (Prefix Doubling).
+
+Thay vì so sánh toàn bộ hậu tố, ta so sánh các phần đầu của chúng với độ dài tăng dần theo lũy thừa của 2 ($1, 2, 4, 8, \dots$):
+- Bước 1: Sắp xếp các hậu tố dựa trên <b>1 ký tự đầu tiên</b>. (thường lấy luôn mã ASCII).
+- Bước 2: Dựa trên kết quả bước 1, sắp xếp dựa trên <b>2 ký tự đầu tiên</b>.
+- Bước 3: Dựa trên kết quả bước 2, sắp xếp dựa trên <b>4 ký tự đầu tiên</b>.
+- $\dots$ Tiếp tục nhân đôi ($2^k$) cho đến khi các thứ hạng (rank) phân biệt hoàn toàn.
+
+> Việc so sánh 2 hậu tố độ dài $2^k$ thực chất chỉ là so sánh 2 cặp số (rank của $2^{k-1}$ ký tự đầu và rank của $2^{k-1}$ ký tự tiếp theo) $\Rightarrow$ Điều này biến việc so sánh xâu thành so sánh số.
+{: .prompt-tip}
+
+### <b> II. Mảng LCP & Thuật toán Kasai ($O(N)$)</b>
+
+Suffix Array bản thân nó chưa đủ mạnh. Ta cần thêm <b>mảng LCP (Longest Common Prefix)</b>.
+- $LCP[i]$ lưu độ dài tiền tố chung dài nhất của 2 hậu tố đứng liền kề nhau trong Suffix Array: hậu tố $SA[i]$ và hậu tố $SA[i-1]$.
+
+<b>Ví dụ:</b> "banana"
+
+SA[1] (`a`) và SA[2] (`ana`) có LCP là 1 (chung chữ `a`).
+
+SA[2] (`ana`) và SA[3] (`anana`) có LCP là 3 (chung chữ `ana`).
+
+<b>Tại sao cần thuật toán Kasai?</b>
+
+Nếu tính LCP ngây thơ cho từng cặp sẽ mất $O(N^2)$. Thuật toán Kasai giúp tính mảng này trong $O(N)$ dựa trên một định lý logic toán học cực hay:
+
+> Gọi $h[i]$ là độ dài LCP của hậu tố $S[i \dots N]$ với hậu tố đứng ngay trước nó trong $SA$. Khi chuyển sang xét hậu tố $S[i+1 \dots N]$, ta đã bỏ đi 1 ký tự đầu tiên, nên độ dài LCP ít nhất sẽ bị giảm đi 1. Tức là: $h[i] \ge h[i-1] - 1$.
+{: .prompt-info}
+
+Nhờ tính chất này, thay vì lùi biến so sánh về 0, ta chỉ việc lùi về $k-1$, giúp tổng số bước tăng của vòng lặp không vượt quá $O(N)$.
+
+```c++
+struct suffix_array {
+    int n;
+    string s;
+    vector<int> arr, rank, lcp;
+    suffix_array() {}
+    suffix_array(const string& s, int n) : s(s), n(n), arr(n + 1), rank(n + 1), lcp(n + 1) {
+        FOR(i, 1, n + 1) {
+            rank[i] = s[i]; // ban đầu là mã ASCII
+            arr[i] = i;
+        }
+    }
+    void build() {
+        int m = 256; // kích thước bảng chữ cái ban đầu (ASCII)
+        vector<int> cnt(max(n, m) + 1);
+        vector<int> tmp_arr(n + 1), tmp_rank(n + 1);
+        // bước 1: counting sort theo ký tự đầu tiên
+        FOR(i, 1, n + 1) cnt[rank[i] = s[i]]++;
+        FOR(i, 1, m + 1) cnt[i] += cnt[i - 1];
+        FORd(i, 1, n + 1) arr[cnt[rank[i]]--] = i;
+        for (int k = 1; k < n; k <<= 1) {
+            // 1. sắp xếp theo nửa sau (vị trí i + k)
+            int p = 0;
+            // các hậu tố không có nửa sau (độ dài < k) đứng trước
+            FOR(i, n - k + 1, n + 1) tmp_arr[++p] = i;
+            // các hậu tố còn lại sắp xếp dựa trên vị trí sau khi đã sort ở bước trước
+            FOR(i, 1, n + 1) if (arr[i] > k) tmp_arr[++p] = arr[i] - k;
+            // 2. sắp xếp theo nửa đầu (vị trí i) bằng Counting Sort
+            fill(all(cnt), 0);
+            FOR(i, 1, n + 1) cnt[rank[i]]++;
+            FOR(i, 1, m + 1) cnt[i] += cnt[i - 1];
+            FORd(i, 1, n + 1) arr[cnt[rank[tmp_arr[i]]]--] = tmp_arr[i];
+            // 3. Cập nhật lại rank mới
+            tmp_rank[arr[1]] = 1;
+            p = 1;
+            auto get_rank = [&](int idx) {
+                return (idx <= n) ? rank[idx] : -1;
+            };
+            FOR(i, 2, n + 1) {
+                // nếu cặp (rank[i], rank[i+k]) giống cặp trước đó thì rank bằng nhau
+                if (rank[arr[i]] == rank[arr[i - 1]] && get_rank(arr[i] + k) == get_rank(arr[i - 1] + k))
+                    tmp_rank[arr[i]] = p;
+                else
+                    tmp_rank[arr[i]] = ++p;
+            }
+            rank = tmp_rank;
+            m = p; // thu hẹp bảng chữ cái cho bước sau
+            if (p == n) break; // tối ưu: nếu tất cả n hậu tố có rank phân biệt thì dừng sớm
+        }
+
+        build_lcp();
+    }
+    // thuật toán Kasai để tính mảng LCP trong độ phức tạp O(n)
+    void build_lcp() {
+        int k = 0;
+        FOR(i, 1, n + 1) {
+            // rank[i] là vị trí của hậu tố i trong mảng arr đã được sắp xếp
+            if (rank[i] == n) { // cyclic
+                k = 0;
+                continue;
+            }
+            int j = arr[rank[i] + 1]; // j là hậu tố đứng ngay sau i trong Suffix Array
+            // đếm số ký tự giống nhau chung của 2 hậu tố
+            while (i + k <= n && j + k <= n && s[i + k] == s[j + k]) {
+                k++;
+            }
+            lcp[rank[i]] = k; // lưu kết quả vào mảng lcp
+            if (k > 0) k--;   // tối ưu của thuật toán Kasai: hậu tố tiếp theo sẽ có lcp ít nhất là k-1
+        }
+    }
+};
+```
 
 ## <b>D. Suffix Automaton (SAM)</b>
