@@ -11,11 +11,10 @@ math: true
 - Tính tổng độ dài phần hợp của các đoạn thẳng
 
 > <b>Ý tưởng:</b>
-{: .prompt-info }
-
 1. Mỗi đoạn $[L, R]$ tạo ra 2 sự kiện: Sự kiện "Mở" tại $L$ (giá trị +1) và sự kiện "Đóng" tại $R$ (giá trị -1).
 2. Sắp xếp tất cả sự kiện theo tọa độ $x$ tăng dần. Trong trường hợp tọa độ $x$ trùng nhau và đề bài có tính <b>"chồng lên nhau"</b> thì sort sự kiện "Mở" trước "Đóng". Nếu không, xếp "Đóng" trước "Mở".
 3. Quét qua mảng sự kiện, cộng dồn giá trị để biết tại mỗi điểm có bao nhiêu đoạn đang phủ lên.
+{: .prompt-tip }
 
 <div class="problem-link">
   🔗 <strong>Ví dụ:</strong>
@@ -87,12 +86,11 @@ $$
 
 #### Triển khai
 > <b>Ý tưởng:</b>
-{: .prompt-info }
-
 1. Sắp xếp các điểm theo tọa độ $x$.
 2. Gọi $d$ là khoảng cách nhỏ nhất tìm được cho đến hiện tại. Đường quét di chuyển từ trái sang phải qua từng điểm.
 3. Sử dụng $set$ (sắp xếp theo tọa độ $y$) để lưu các điểm nằm trong "cửa sổ" có khoảng cách $x$ tới điểm hiện tại $\le d$.
 4. <b>Kỹ thuật 2 con trỏ:</b> Khi xét điểm hiện tại $(x_i, y_i)$, ta chỉ cần dùng lower_bound trên set để tìm các điểm có tọa độ $y$ nằm trong khoảng $[y_i - d, y_i + d]$. Sau đó cập nhật lại $d$. Loại bỏ các điểm cũ lọt ra khỏi cửa sổ khoảng cách $d$ theo trục $x$.
+{: .prompt-tip }
 
 <div class="problem-link">
   🔗 <strong>Ví dụ:</strong>
