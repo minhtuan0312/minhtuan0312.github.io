@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Kĩ thuật hai con trỏ🐭
+title: Kĩ thuật hai con trỏ 🐭 & Sliding Window 🪟
 date: 2026-02-25 20:21 +0700
 math: true
 categories: [general]
@@ -34,7 +34,7 @@ while (i <= n && j <= m) {
 // của mảng A hoặc mảng B (nếu bài toán yêu cầu gộp mảng).
 ```
 
-## <b>Dạng 2: Hai con trỏ cùng chiều</b>
+## <b>Dạng 2: Hai con trỏ cùng chiều (Sliding Window)</b>
 
 Dạng này áp dụng trên mảng (không bắt buộc phải sắp xếp) khi ta cần tìm một <b>đoạn con liên tiếp (subarray)</b> thỏa mãn một điều kiện nhất định. Cả $L$ và $R$ đều xuất phát từ 1.
 
@@ -171,4 +171,60 @@ for (int i = 2; i <= n; i++) { // i là con trỏ đọc, chạy từ phần t�
     }
 }
 // kết thúc: 'j' chính là số lượng phần tử của mảng sau khi lọc
+```
+
+## <b> Kĩ thuật SWAG </b>
+
+<b>SWAG (Sliding Window Aggregation)</b> là một kỹ thuật cực kỳ thông minh trong cấu trúc dữ liệu, giúp chúng ta tính toán các giá trị tổng hợp (như min, max, gcd, sum) trên một cửa sổ trượt (sliding window) với độ phức tạp thời gian $O(1)$ cho mỗi thao tác.
+
+Thông thường, nếu dùng cửa sổ trượt để tính sum, ta chỉ cần cộng phần tử mới và trừ phần tử cũ. Nhưng với GCD, Min, Max, XOR, Nhân ma trận, ghép chuỗi... ta không thể trừ một phần tử đi được. Đây là dấu hiệu để ta dùng SWAG.
+
+<b>Nguyên lý hoạt động</b>
+
+SWAG biến một hàng đợi (Queue) thành hai ngăn xếp (Stack): <b>Front Stack</b> (để lấy ra) và <b>Back Stack</b> (để thêm vào).
+
+<b>Cơ chế duy trì:</b>
+
+Mỗi phần tử trong Stack không chỉ lưu giá trị của chính nó, mà còn lưu <b>giá trị tổng hợp (aggregation)</b> của tất cả các phần tử nằm dưới nó trong Stack đó.
+1. <b>Back Stack (Vào):</b> Khi đẩy một phần tử $x$ vào, giá trị tổng hợp mới sẽ là $f(aggregate\_current, x)$.
+2. <b>Front Stack (Ra):</b> Khi cần lấy phần tử ra (pop), nếu Front Stack trống, ta đổ toàn bộ Back Stack sang Front Stack và tính toán lại các giá trị tổng hợp trên đường đi.
+3. <b>Kết quả cuối cùng:</b> Kết quả của cửa sổ là sự kết hợp của `aggregate` từ Front Stack và aggregate từ Back Stack: $f(Front\_agg, Back\_agg)$.
+
+```c++
+template<class T>
+struct SWAG{
+    struct Node {
+        T val, agg;
+    };
+    vector<Node> s_front, s_back;
+
+    T op(T a, T b) {
+        return __gcd(a, b);
+        // return min(a, b);
+        // return a + b;
+    }
+    void push(T x) {
+        if(s_back.empty()) s_back.pb({x, x});
+        else s_back.pb({x, op(s_back.back().agg, x)}); // op(tổng cũ, phần tử mới)
+    }
+    void pop() {
+        if(s_front.empty()) {
+            while(!s_back.empty()) {
+                T x = s_back.back().val; s_back.pop_back();
+                if(s_front.empty()) s_front.pb({x, x});
+                else s_front.pb({x, op(x, s_front.back().agg)}); // op(phần tử mới, tổng cũ)
+            }
+        }
+        if (!s_front.empty()) s_front.pop_back();
+    }
+    T get_all() {
+        if(s_front.empty() && s_back.empty()) return 0;
+        if(s_front.empty()) return s_back.back().agg;
+        if(s_back.empty()) return s_front.back().agg;
+        return op(s_front.back().agg, s_back.back().agg); // op(tổng front, tổng back)
+    }
+    int get_size() {
+        return sz(s_back) + sz(s_front);
+    }
+};
 ```
