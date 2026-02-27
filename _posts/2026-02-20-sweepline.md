@@ -5,14 +5,31 @@ date: 2026-02-20 06:24 +0700
 math: true
 ---
 
+<b>Khi nào nghĩ đến Sweeping Line đầu tiên?</b>
+
+- <b>Dữ liệu đầu vào là các "Khoảng không gian" hoặc "Tọa độ":</b> Đề bài cho các đoạn thẳng $[L, R]$, các hình chữ nhật $[x_1, y_1, x_2, y_2]$, các hình tròn, hoặc các tập hợp điểm trên mặt phẳng.
+- <b>Từ khóa về sự chồng lấn/Giao nhau:</b> "Phủ (cover)", "Giao nhau (intersect)", "Chồng lên nhau (overlap)", "Liên tiếp", "Nhiều nhất/Ít nhất".
+- <b>Yêu cầu tính toán tổng thể:</b> "Tổng chiều dài", "Tổng diện tích", "Điểm lớn nhất/nhỏ nhất", "Khoảng cách ngắn nhất".
+- <b>Tính độc lập của trục tọa độ:</b> Bài toán có thể được giải quyết bằng cách "cắt lát" không gian theo một chiều (thường là trục Ox hoặc trục thời gian). Nếu biết trạng thái tại mặt cắt hiện tại, ta có thể dễ dàng tính toán cho không gian giữa 2 mặt cắt liên tiếp.
+
+Bất kể là bài quét 1D hay 2D, ta luôn cần đi qua 4 bước chuẩn mực sau:
+
+1. <b>Định nghĩa Sự kiện (Events):</b> Mỗi đối tượng hình học sinh ra các "sự kiện" khi đường quét chạm vào nó (Bắt đầu) và khi đường quét rời đi (Kết thúc).
+2. <b>Sắp xếp Sự kiện:</b> Sắp xếp tất cả sự kiện theo tọa độ của đường quét. Lưu ý cực kỳ quan trọng: Xử lý điều kiện phá vỡ hòa (Tie-breaking) khi nhiều sự kiện trùng tọa độ.
+3. <b>Cấu trúc dữ liệu trạng thái (State Data Structure):</b> Dùng một cấu trúc dữ liệu (Biến đếm, Set, Segment Tree, Fenwick Tree) để duy trì thông tin của các đối tượng đang giao cắt với đường quét hiện tại.
+4. <b>Xử lý tuần tự:</b> Duyệt qua mảng sự kiện đã sort, cập nhật Cấu trúc dữ liệu và trích xuất kết quả.
+
 ## <b>I. Quét 1D</b>
-- Tìm số khoảng chồng chéo nhau lớn nhất (Max overlaps)
-- Đếm số phòng họp cần thiết
-- Tính tổng độ dài phần hợp của các đoạn thẳng
+
+Dạng này thường gặp ở các bài toán quản lý phòng họp, lịch trình, hoặc tính độ dài đoạn thẳng bị phủ. Đây thực chất là kỹ thuật <b>Mảng hiệu (Difference Array)</b> nhưng được áp dụng trên tọa độ lớn, bắt buộc phải sắp xếp thay vì dùng mảng tĩnh.
+
+- Độ phức tạp tổng quát: $O(N \log N)$ cho bước sắp xếp, $O(N)$ cho bước duyệt. Tổng thời gian là $O(N \log N)$.
 
 > <b>Ý tưởng:</b>
 1. Mỗi đoạn $[L, R]$ tạo ra 2 sự kiện: Sự kiện "Mở" tại $L$ (giá trị +1) và sự kiện "Đóng" tại $R$ (giá trị -1).
-2. Sắp xếp tất cả sự kiện theo tọa độ $x$ tăng dần. Trong trường hợp tọa độ $x$ trùng nhau và đề bài có tính <b>"chồng lên nhau"</b> thì sort sự kiện "Mở" trước "Đóng". Nếu không, xếp "Đóng" trước "Mở".
+2. Sắp xếp tất cả sự kiện theo tọa độ $x$ tăng dần.
+- Nếu đề bài tính "chạm mép là chồng lên nhau": Xử lý sự kiện "Mở" trước "Đóng".
+- Nếu đề bài tính "chạm mép KHÔNG chồng lên nhau": Xử lý sự kiện "Đóng" trước "Mở".
 3. Quét qua mảng sự kiện, cộng dồn giá trị để biết tại mỗi điểm có bao nhiêu đoạn đang phủ lên.
 {: .prompt-tip }
 
@@ -22,12 +39,13 @@ math: true
     Restaurant Customers
   </a>
 </div>
+
 ```c++
 struct Event{
     int x;
     int type; // 1: open, -1: close
     bool operator<(const Event &other) {
-        if(x == other.x) return type > other.type;
+        if(x != other.x) return x < other.x;
         return x < other.x;
     }
 };
@@ -53,6 +71,8 @@ int main(void) {
 
 ## <b>II. Quét 2D</b>
 ### 1. Cặp điểm gần nhất (Closest Point Pair)
+
+Bài toán kinh điển yêu cầu tìm cặp điểm có khoảng cách Euclid nhỏ nhất trong không gian 2D. Thuật toán ngây thơ duyệt mọi cặp điểm mất $O(N^2)$. Sweepline giúp giảm xuống $O(N \log N)$.
 
 #### Phân tích toán học
 
@@ -156,6 +176,13 @@ int main(void) {
 ```
 
 ### 2. Diện tích / Chu vi hợp các hình chữ nhật
+
+Sự kết hợp hoàn hảo: Sweepline + Segment Tree + Rời rạc hóa (Coordinate Compression).
+
+- Sweepline: Cắt không gian theo trục $Ox$. Tại mỗi sự kiện (cạnh trái/phải của hình chữ nhật), ta cập nhật trạng thái các đoạn bị phủ trên trục $Oy$.
+- Segment Tree: Đóng vai trò là "Cấu trúc dữ liệu trạng thái". Giúp cập nhật một đoạn $[y_1, y_2]$ bị phủ thêm hoặc bớt đi trong thời gian $O(\log N)$ và trả về tổng độ dài các đoạn đang bị phủ trên trục $Oy$.
+- Rời rạc hóa: Vì tọa độ $y$ có thể rất lớn ($10^9$), ta phải gom chúng lại thành các mốc chỉ số từ $1$ đến $2N$ để dựng cây Segment Tree.
+{: .prompt-tip }
 
 > <b>Ý tưởng:</b>
 {: .prompt-info }

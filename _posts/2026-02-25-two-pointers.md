@@ -85,46 +85,67 @@ while (l < r) { // chú ý: thường là < chứ không phải <= để tránh 
 Dạng này thường xuất hiện khi ta cần phủ một không gian (thời gian, trục số, số lượng công việc) bằng cách chọn ra một tập hợp con tối ưu từ các phần tử cho trước.
 
 > Thay vì dùng hai con trỏ để tạo ra một "khung cửa sổ" cố định, ta dùng:
-- Con trỏ $i$: Để "quét" qua danh sách các lựa chọn (đã được sắp xếp).
-- Biến biên `current_limit`: Xác định phạm vi mà các lựa chọn hiện tại phải tuân thủ.
-- Biến biên `next_limit`: Lưu lại lựa chọn "tốt nhất/xa nhất" mà ta có thể đạt được trong bước tiếp theo.
+- `Con trỏ i`: Để <b>quét qua danh sách các lựa chọn (đã được sắp xếp)</b>.
+- `current_limit`: Xác định phạm vi mà <b>các lựa chọn hiện tại phải tuân thủ</b>.
+- `best_reach`: Lưu lại lựa chọn <b>tốt nhất/xa nhất</b> mà ta có thể đạt được trong <b>bước tiếp theo</b>.
+{: .prompt-tip}
+
+> Khi nào sort theo <b>start</b>? Khi ta cần <b>phủ liên tục từ trái sang phải</b>.
+{: .prompt-tip}
+
+> Khi nào sort theo <b>end</b>? Khi ta muốn <b>chọn nhiều đoạn không chồng lấp nhất</b> (interval scheduling / maximum non-overlapping).
 {: .prompt-tip}
 
 ```c++
 // 1. luôn bắt đầu bằng việc Sắp xếp (thường theo mốc bắt đầu hoặc vị trí)
 sort(A + 1, A + 1 + n, cmp);
 
-int i = 1;
-int count = 0;
-ll current_limit = START_POS; // điểm bắt đầu cần xử lý
-
+int i = 1; // con trỏ i
+ll current_limit = START_POS; // phạm vi cần tuân thủ
 while (current_limit < TARGET_POS) {
-    long long best_reach = -1; 
-    bool found = false;
+    ll best_reach = -1; 
+    bool ok = 0;
 
-    // con trỏ i đóng vai trò "quét" tất cả các ứng viên hợp lệ thỏa mãn điều kiện nằm trong current_limit
+    // con trỏ i đóng vai trò quét tất cả các ứng viên hợp lệ thỏa mãn điều kiện nằm trong current_limit
     while (i <= n && A[i].start <= current_limit) {
-        // tham lam: Trong các ứng viên hợp lệ, chọn cái "tốt nhất" 
-        // (thường là cái có thể vươn xa nhất)
+        // tham lam: trong các ứng viên hợp lệ, chọn cái tốt nhất (thường là cái có thể vươn xa nhất)
         if (A[i].end > best_reach) {
             best_reach = A[i].end;
             // lưu id hoặc thực hiện logic bổ trợ tại đây
         }
         i++; // i chỉ tăng, không bao giờ quay lại -> O(N)
-        found = true;
+        ok = 1;
     }
 
     // kiểm tra xem có tiến triển được không (tránh lặp vô hạn)
-    if (!found || best_reach <= current_limit) {
+    if (!ok || best_reach <= current_limit) {
         // không thể đi tiếp được nữa -> thất bại
         return FAILURE; 
     }
 
-    // thực hiện "bước nhảy" tham lam
+    // thực hiện bước nhảy tham lam
     current_limit = best_reach;
     count++; // tăng số bước/số phần tử đã chọn
 }
 ```
+
+### Bài tập
+
+#### <b>Nhóm 1: Phủ đoạn & Khoảng</b>
+
+<div class="problem-link">
+  🔗 <strong>NTUCoder:</strong>
+  <a href="https://old.ntucoder.net/Problem/Details/2210" target="_blank">
+    DOANP - Đoạn phủ
+  </a>
+</div>
+
+<div class="problem-link">
+  🔗 <strong>UVA-10020:</strong>
+  <a href="https://vjudge.net/problem/UVA-10020" target="_blank">
+    Minimal coverage
+  </a>
+</div>
 
 ## <b>Dạng 5: Hai con trỏ Nhanh - Chậm (Thuật toán Rùa và Thỏ / Floyd's Cycle Finding)</b>
 
