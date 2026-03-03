@@ -235,6 +235,164 @@ int main(void) {
 }
 ```
 
+## Segment Tree Walk
+
+> Thay vì dùng chặt nhị phân (Binary Search) kết hợp với truy vấn Segment Tree (mất $O(\log^2 n)$), kỹ thuật Walk cho phép ta đi thẳng từ gốc xuống lá để tìm vị trí thỏa mãn điều kiện chỉ trong $O(\log n)$.
+{: .prompt-tip}
+
+Tư duy cốt lõi của Walk là đứng ở một nút và tự hỏi: **"Mình nên rẽ trái hay rẽ phải?"**
+- Nếu bên trái có khả năng chứa đáp án (ví dụ: **tìm giá trị đầu tiên $\ge x$**, và **max của cây con trái $\ge x$**), ta rẽ trái.
+- Nếu bên trái không thỏa mãn, ta rẽ phải.
+- Nếu cả nút hiện tại không thỏa mãn điều kiện hoặc nằm ngoài vùng truy vấn, ta quay đầu (trả về giá trị báo lỗi như $-1$).
+
+Để mô phỏng chân thực nhất, giả sử cây Segment Tree của ta đang lưu Max (tìm phần tử lớn nhất). Bài toán phổ biến nhất của dạng này là: "Tìm vị trí $i$ **nhỏ nhất** trong đoạn [ql, qr] sao cho $A[i] \ge val$".
+
+```c++
+struct segment_tree {
+    int n;
+    vector<ll> st;
+    segment_tree() {}
+    segment_tree(int n): n(n), st(n << 2) {}
+    void build(int v, int l, int r, int A[]) {
+        if(l == r) {
+            st[v] = A[l];
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(v << 1, l, m, A);
+        build(v << 1 | 1, m + 1, r, A);
+        st[v] = max(st[v << 1], st[v << 1 | 1]);
+    }
+    // tìm vị trí đầu tiên trong đoạn [ql, qr] có giá trị >= val
+    int walk(int v, int l, int r, int ql, int qr, ll val) {
+        if(ql > qr || st[v] < val>) return -1;
+        if(l == r) return l;
+        int m = (l + r) >> 1;
+        // ưu tiên rẽ TRÁI vì ta cần tìm vị trí NHỎ NHẤT (đầu tiên) 
+        int res = walk(v << 1, l, m, ql, min(m, qr), val);
+        if(res == -1) { // nếu bên trái không có đáp án, bắt buộc rẽ PHẢI
+            res = walk(v << 1 | 1, m + 1, r, max(ql, m + 1), qr, val);
+        }
+        return res;
+    }
+};
+```
+
+## Segment Tree Beats
+
+Bài toán kinh điển nhất sinh ra Segment Tree Beats là:
+- **Truy vấn 1:** Cập nhật đoạn $[l, r]$: $a_i = \min(a_i, x)$ (gọi tắt là **Range chmin**).
+- **Truy vấn 2:** Tính tổng đoạn $[l, r]$.
+
+Với phép cộng đoạn (Range Add), khi bạn cộng $x$ vào đoạn độ dài $len$, tổng đoạn tăng lên $x \times len$. Rất dễ để cập nhật $O(1)$ tại một nút và lưu Lazy.
+
+Nhưng với phép $a_i = \min(a_i, x)$, ta **không biết** trong đoạn đó có bao nhiêu phần tử lớn hơn $x$, và chúng lớn hơn $x$ bao nhiêu đơn vị để trừ đi khỏi tổng `sum`. Nếu cố tình đi xuống tận lá để cập nhật thì độ phức tạp sẽ bị suy biến thành $O(N)$.
+
+> Ý tưởng cốt lõi là **lưu thêm thông tin để biết khi nào có thể cập nhật nhanh**, khi nào **bắt buộc phải đệ quy sâu hơn**.
+{: .prompt-tip}
+
+Tại mỗi nút, thay vì chỉ lưu `sum`, ta lưu thêm 3 giá trị:
+- `max1`: Giá trị lớn nhất **nghiêm ngặt** trong đoạn.
+- `max2`: Giá trị lớn thứ hai **nghiêm ngặt** trong đoạn.
+- `maxc`: Số lần xuất hiện của `max1` trong đoạn.
+
+Khi thực hiện cập nhật `chmin(v, x)` tại nút `v`, ta đối mặt với 3 trường hợp (đây là "nhịp đập - beats" của thuật toán):
+
+1. **Trường hợp 1 (Break condition):** $x \ge max_1$.
+- Phép $\min(a_i, x)$ không làm thay đổi bất cứ phần tử nào trong đoạn này. **$\rightarrow$ Dừng lại ngay (Return).**
+2. **Trường hợp 2 (Tag condition):** $max_2 < x < max_1$.
+- Phép $\min$ chỉ tác động lên **đúng những phần tử đang bằng $max_1$**. Những phần tử này sẽ bị giảm xuống thành $x$.
+- Ta có thể cập nhật $O(1)$ ngay tại nút này: `$sum = sum - (max_1 - x) \times max_c$ ; $max_1 = x$` Và đánh dấu Lazy (thực chất chính max1 đóng vai trò là Lazy tag). **$\rightarrow$ Cập nhật và Dừng lại**.
+3. **Trường hợp 3 (Recurse condition):** $x \le max_2$.
+- Phép $\min$ không chỉ ảnh hưởng đến $max_1$ mà còn ảnh hưởng đến $max_2$, $max_3$, v.v. Ta không thể tính nhanh được tổng thay đổi. **$\rightarrow$ Bắt buộc Pushdown và đi tiếp xuống 2 con**.
+
+Dù có vẻ như Trường hợp 3 sẽ làm thuật toán chậm đi, nhưng người ta đã chứng minh được độ phức tạp khấu hao (amortized) của toàn bộ quá trình chỉ là $O(Q \log^2 N)$ hoặc $O(Q \log N)$ tùy cấu trúc bài.
+
+```c++
+struct segment_tree_beats {
+    int n;
+    vector<ll> sum, max1, max2, maxc;
+
+    segment_tree_beats(int n): n(n), sum(n << 2, 0), max1(n << 2, -INF), max2(n << 2, -INF), maxc(n << 2, 0) {}
+
+    // Gộp thông tin từ 2 con lên cha
+    void pushup(int v) {
+        int l = v << 1, r = v << 1 | 1;
+        sum[v] = sum[l] + sum[r];
+        
+        if (max1[l] == max1[r]) {
+            max1[v] = max1[l];
+            max2[v] = max(max2[l], max2[r]);
+            maxc[v] = maxc[l] + maxc[r];
+        } else if (max1[l] > max1[r]) {
+            max1[v] = max1[l];
+            max2[v] = max(max2[l], max1[r]);
+            maxc[v] = maxc[l];
+        } else {
+            max1[v] = max1[r];
+            max2[v] = max(max1[l], max2[r]);
+            maxc[v] = maxc[r];
+        }
+    }
+
+    // Hàm áp dụng phép chmin ngay tại nút v (Trường hợp 2)
+    void apply_chmin(int v, ll val) {
+        if (val >= max1[v]) return;
+        sum[v] -= (max1[v] - val) * maxc[v];
+        max1[v] = val;
+    }
+
+    // Đẩy thông tin xuống con
+    void pushdown(int v) {
+        int l = v << 1, r = v << 1 | 1;
+        // Nếu max1 của cha nhỏ hơn max1 của con, nghĩa là cha vừa bị chmin
+        // Ta dùng chính max1 của cha làm lazy tag đẩy xuống con
+        apply_chmin(l, max1[v]);
+        apply_chmin(r, max1[v]);
+    }
+
+    void build(int v, int l, int r, ll A[]) {
+        if (l == r) {
+            sum[v] = max1[v] = A[l];
+            max2[v] = -INF;
+            maxc[v] = 1;
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(v << 1, l, m, A);
+        build(v << 1 | 1, m + 1, r, A);
+        pushup(v);
+    }
+
+    // Range chmin: A[i] = min(A[i], val) với i in [ql, qr]
+    void upd_chmin(int v, int l, int r, int ql, int qr, ll val) {
+        // Break condition (TH 1)
+        if (l > qr || r < ql || val >= max1[v]) return; 
+        
+        // Tag condition (TH 2)
+        if (ql <= l && r <= qr && val > max2[v]) {
+            apply_chmin(v, val);
+            return;
+        }
+        
+        // Recurse condition (TH 3)
+        pushdown(v);
+        int m = (l + r) >> 1;
+        upd_chmin(v << 1, l, m, ql, qr, val);
+        upd_chmin(v << 1 | 1, m + 1, r, ql, qr, val);
+        pushup(v);
+    }
+
+    ll query_sum(int v, int l, int r, int ql, int qr) {
+        if (ql > r || qr < l) return 0;
+        if (ql <= l && r <= qr) return sum[v];
+        pushdown(v);
+        int m = (l + r) >> 1;
+        return query_sum(v << 1, l, m, ql, qr) + query_sum(v << 1 | 1, m + 1, r, ql, qr);
+    }
+};
+```
+
 ## Fenwick tree (1-based)
 ```c++
 struct fenwick_tree {
@@ -522,6 +680,31 @@ struct trie_xor {
             } else u = nxt[u][k];
         }
         return res;
+    }
+};
+```
+
+## Sparse Table (1-index)
+```c++
+const int limN = 1000005;
+const int limLOG = 21;
+int st[limN][limLOG];
+struct sparse_table {
+    int n, max_log;
+    vector<vector<ll>> st;
+    sparse_table() {}
+    sparse_table(int A[], int n): n(n), max_log(__lg(n) + 1) {
+        FOR(i, 1, n + 1) st[i][0] = A[i];
+        FOR(j, 1, max_log) {
+            for(int i = 1; i + (1 << j) - 1 <= n; i++) {
+                st[i][j] = __gcd(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
+            }
+        }
+    }
+    ll query(int l, int r) {
+        if(l > r) return 0;
+        int j = __lg(r - l + 1);
+        return __gcd(st[l][j], st[r - (1 << j) + 1][j]);
     }
 };
 ```

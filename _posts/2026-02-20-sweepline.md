@@ -33,13 +33,6 @@ Dạng này thường gặp ở các bài toán quản lý phòng họp, lịch 
 3. Quét qua mảng sự kiện, cộng dồn giá trị để biết tại mỗi điểm có bao nhiêu đoạn đang phủ lên.
 {: .prompt-tip }
 
-<div class="problem-link">
-  🔗 <strong>Ví dụ:</strong>
-  <a href="https://cses.fi/problemset/task/1619/" target="_blank">
-    Restaurant Customers
-  </a>
-</div>
-
 ```c++
 struct Event{
     int x;
@@ -59,15 +52,56 @@ int main(void) {
         events.pb({A[i].fi, 1});
         events.pb({A[i].se, -1});
     }
+    // 2. sắp xếp tất cả sự kiện trên trục tọa độ
     sort(all(events));
-    int cur = 0, best = 0;
-    for(const auto &[x, t]: events) {
-        cur += t;
-        maximize(best, cur);
+    // 3. quét trạng thái
+    ll active = 0;       // đếm số đoạn đang mở tại vị trí hiện tại
+    ll prev_x = events[0].x;     // tọa độ của sự kiện trước đó
+    ll res = 0;          // biến lưu kết quả
+    for(const auto &e: events) {
+        // --- BƯỚC A: Xử lý KHOẢNG CÁCH từ prev_x đến vị trí hiện tại ---
+        // (Thường dùng cho bài toán tính tổng độ dài)
+        if (active > 0) { 
+            res += (e.x - prev_x);
+        }
+        // --- BƯỚC B: Cập nhật trạng thái tại điểm hiện tại ---
+        active += e.type;
+        prev_x = e.x;
+        // --- BƯỚC C: Cập nhật ĐỈNH (Max/Min) ---
+        // (Thường dùng cho bài toán tìm số điểm chồng lấp lớn nhất)
+        // res = max(res, active);
     }
-    cout << best;
+    cout << res;
 }
 ```
+
+### <b>Dạng 1: Tính tổng độ dài bị phủ bởi ít nhất 1 đoạn</b>
+>
+- Dùng **Bước A**
+- Điều kiện: `if (active > 0) res += (e.x - prev_x);`
+{: .prompt-tip}
+
+### <b>Dạng 2: Tìm điểm bị chồng lấp nhiều nhất (Ví dụ: Cần bao nhiêu phòng họp, Lượng khách đông nhất)</b>
+>
+- Bỏ qua Bước A. Chỉ dùng **BƯỚC C**.
+- Điều kiện: `res = max(res, active);` (Lưu ý: Khởi tạo `res = 0`).
+{: .prompt-tip}
+
+### <b>Dạng 3: Tính tổng độ dài bị phủ bởi ĐÚNG K đoạn (Hoặc ÍT NHẤT K đoạn) </b>
+
+> 
+- Dùng BƯỚC A.
+- Điều kiện (Đúng K): `if (active == K) ans += (e.pos - prev_pos);`
+- Điều kiện (Ít nhất K): `if (active >= K) ans += (e.pos - prev_pos);`
+{: .prompt-tip}
+
+
+<div class="problem-link">
+  🔗 <strong>Ví dụ:</strong>
+  <a href="https://cses.fi/problemset/task/1619/" target="_blank">
+    Restaurant Customers
+  </a>
+</div>
 
 ## <b>II. Quét 2D</b>
 ### 1. Cặp điểm gần nhất (Closest Point Pair)
@@ -185,12 +219,11 @@ Sự kết hợp hoàn hảo: Sweepline + Segment Tree + Rời rạc hóa (Coord
 {: .prompt-tip }
 
 > <b>Ý tưởng:</b>
-{: .prompt-info }
-
 1. Quét một đường thẳng đứng từ trái sang phải. Mỗi hình chữ nhật tạo ra 2 sự kiện: Cạnh trái (thêm đoạn $[y_{bottom}, y_{top}]$ vào) và Cạnh phải (xóa đoạn $[y_{bottom}, y_{top}]$ đi).
 2. Sắp xếp các cạnh này theo tọa độ $x$.
 3. Sử dụng Segment Tree quản lý chiều dài các đoạn trên trục $y$. Mỗi nút của Segment Tree lưu độ dài đoạn đang bị phủ bởi ít nhất một hình chữ nhật trên đoạn $y$ tương ứng.
 4. Diện tích = $\sum (x_{i} - x_{i-1}) \times (\text{Độ dài đoạn } y \text{ đang được phủ từ Segment Tree})$.
+{: .prompt-tip }
 
 <b>Kỹ thuật bắt buộc theo kèm:</b> Rời rạc hóa (Coordinate Compression)
 
@@ -275,5 +308,101 @@ int main(void) {
         last_x = e.x;
     }
     cout << res;
+}
+```
+
+## <b>III. Sweepline + DSU</b>
+
+Bản chất của DSU chuẩn là **chỉ hỗ trợ thêm cạnh (Union)** chứ không hỗ trợ **xóa cạnh**. Do đó, ý tưởng cốt lõi khi kết hợp với Sweeping Line là: **Sắp xếp lại các sự kiện (thời gian, trọng số, tọa độ)** để ta chỉ cần đi một chiều (quét) và **liên tục thêm vào DSU**, hoặc **nâng cấp DSU để có thể "quay lui" (Rollback)** nếu cần thiết.
+
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+// ---------------------------------------------------------
+// 1. ĐỊNH NGHĨA SỰ KIỆN (EVENT)
+// ---------------------------------------------------------
+struct Event {
+    ll x;       // Tọa độ trên trục quét (thường là trục Ox)
+    int type;          // Phân loại sự kiện (VD: 1 = Cạnh trái/Bắt đầu, -1 = Cạnh phải/Kết thúc)
+    ll y1, y2;  // Thông tin đi kèm trên trục còn lại (trục Oy)
+    int id;            // ID để truy vết (nếu cần)
+
+    // Quy tắc sắp xếp sự kiện quan trọng nhất:
+    // Quét từ trái sang phải. Nếu trùng x, ưu tiên xử lý type nào trước?
+    bool operator<(const Event &other) const {
+        if (x == other.x) {
+            return type > other.type; // Tùy chỉnh: Thường ưu tiên Mở (1) trước Đóng (-1)
+        }
+        return x < other.x;
+    }
+};
+
+// ---------------------------------------------------------
+// 2. CẤU TRÚC DỮ LIỆU TRẠNG THÁI (STATE DATA STRUCTURE)
+// ---------------------------------------------------------
+// Có thể là: set, multiset, Fenwick Tree (BIT), hoặc Segment Tree
+struct ActiveState {
+    // Khởi tạo cấu trúc dữ liệu
+    void init(int n) { /* ... */ }
+    
+    // Hàm thêm đối tượng vào đường quét
+    void add(...) { /* ... */ }
+    
+    // Hàm xóa đối tượng khỏi đường quét
+    void remove(...) { /* ... */ }
+    
+    // Hàm lấy thông tin hiện tại (diện tích, khoảng cách, số lượng,...)
+    ll query(...) { /* ... */ }
+};
+
+// ---------------------------------------------------------
+// 3. VÒNG LẶP QUÉT (SWEEP LOOP)
+// ---------------------------------------------------------
+void solve() {
+    int n; cin >> n;
+    vector<Event> events;
+    ActiveState state;
+    
+    // Bước 3.1: Đọc dữ liệu và tạo tập sự kiện
+    for (int i = 0; i < n; i++) {
+        // ... Đọc input ...
+        // events.push_back({x, type, y1, y2, id});
+    }
+    
+    // (Tùy chọn) Rời rạc hóa (Coordinate Compression) nếu mảng y quá lớn và dùng SegTree/BIT
+    // ... compress code ...
+
+    // Bước 3.2: Sắp xếp các sự kiện
+    sort(events.begin(), events.end());
+    
+    ll result = 0; // Hoặc cực trị (1e18 cho min, -1 cho max)
+    ll last_x = events.empty() ? 0 : events[0].x;
+
+    // Bước 3.3: Quét qua từng sự kiện
+    for (const auto& e : events) {
+        // Cập nhật kết quả dựa trên khoảng cách (e.x - last_x) và Trạng thái cũ
+        // result += (e.x - last_x) * state.query(...);
+
+        // Xử lý sự kiện hiện tại: Thay đổi trạng thái
+        if (e.type == 1) { // Mở / Thêm vào
+            // state.add(...);
+        } else if (e.type == -1) { // Đóng / Lấy ra
+            // state.remove(...);
+        } else { // Truy vấn đặc biệt (nếu có)
+            // ...
+        }
+        
+        last_x = e.x;
+    }
+    
+    cout << result << nl;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    solve();
+    return 0;
 }
 ```

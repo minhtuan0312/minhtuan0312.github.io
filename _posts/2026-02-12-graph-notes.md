@@ -513,7 +513,6 @@ int main(void) {
     }
 }
 ```
-
 ### <b>Thuật toán Floyd Warshall</b>
 ```c++
 const int limN = 105;
